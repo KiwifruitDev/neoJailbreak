@@ -305,12 +305,12 @@ if CLIENT then
     end)
 elseif SERVER then
     timer.Create("JBRoundEndLogic", 1, 0, function()
-        if JB.State == STATE_IDLE and wantStartup and #team.GetPlayers(TEAM_GUARD) >= 1 and #team.GetPlayers(TEAM_PRISONER) >= 1 then
+        if JB.State == STATE_IDLE and wantStartup and #JB:GetTeamPlayers(TEAM_GUARD) >= 1 and #JB:GetTeamPlayers(TEAM_PRISONER) >= 1 then
             JB:DebugPrint("State is currently idle, but people have joined Starting round 1.")
             JB:NewRound()
         end
 
-        if JB.State ~= STATE_PLAYING and JB.State ~= STATE_SETUP and JB.State ~= STATE_LASTREQUEST or #team.GetPlayers(TEAM_GUARD) < 1 or #team.GetPlayers(TEAM_PRISONER) < 1 then return end
+        if JB.State ~= STATE_PLAYING and JB.State ~= STATE_SETUP and JB.State ~= STATE_LASTREQUEST or #JB:GetTeamPlayers(TEAM_GUARD) < 1 or #JB:GetTeamPlayers(TEAM_PRISONER) < 1 then return end
         local count_guard = JB:AliveGuards()
         local count_prisoner = JB:AlivePrisoners()
         if count_prisoner < 1 and count_guard < 1 then
@@ -432,7 +432,11 @@ JB._IndexCallback.LastRequest = {
         if not JB.LastRequestTypes[tab.type].setupCallback(tab.prisoner, tab.guard) then
             net.Start("JB.LR.GetReady")
             net.WriteString(tab.type)
-            net.Send(players)
+            local recipients = {}
+            for _, ply in ipairs(players) do
+                if ply:IsPlayer() then recipients[#recipients + 1] = ply end
+            end
+            if #recipients > 0 then net.Send(recipients) end
             timer.Simple(7, function()
                 if not JB.Util.isValid(tab.prisoner, tab.guard) then return end
                 JB.Util.iterate(players):Freeze(false):GodDisable()

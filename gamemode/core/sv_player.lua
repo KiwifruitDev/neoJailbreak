@@ -69,8 +69,14 @@ JB.Gamemode.PlayerCanPickupWeapon = function(_unused_77_47, ply, entity)
 end
 
 JB.Gamemode.PlayerShouldTakeDamage = function(_unused_89_48, a, b)
-    if IsValid(a) and IsValid(b) and a:IsPlayer() and b:IsPlayer() and a:Team() == b:Team() and (JB.State == STATE_SETUP or JB.State == STATE_PLAYING or JB.State == STATE_LASTREQUEST) and (not IsValid(JB.TRANSMITTER) or a:Team() ~= TEAM_PRISONER or not JB.TRANSMITTER:GetJBWarden_PVPDamage()) then --or (not IsValid(JB.TRANSMITTER) or a:Team() ~= TEAM_GUARD or not JB.TRANSMITTER:GetJBWarden_PVPDamageGuards()) then
-        return false
+    if IsValid(a) and IsValid(b) then
+        local aIsCombatant = a:IsPlayer()
+        local bIsCombatant = b:IsPlayer()
+        local aTeam = a:Team()
+        local bTeam = b:Team()
+        if aIsCombatant and bIsCombatant and aTeam == bTeam and (JB.State == STATE_SETUP or JB.State == STATE_PLAYING or JB.State == STATE_LASTREQUEST) and (not IsValid(JB.TRANSMITTER) or aTeam ~= TEAM_PRISONER or not JB.TRANSMITTER:GetJBWarden_PVPDamage()) then
+            return false
+        end
     end
     return true
 end
@@ -297,7 +303,20 @@ function JB:BroadcastNotification(text, omit)
     net.Start("JB.SendNotification")
     net.WriteString(text)
     if omit then
-        net.SendOmit(omit)
+        local excluded = {}
+        if istable(omit) then
+            for _, ply in ipairs(omit) do
+                if IsValid(ply) and ply:IsPlayer() then excluded[#excluded + 1] = ply end
+            end
+        elseif IsValid(omit) and omit:IsPlayer() then
+            excluded[1] = omit
+        end
+
+        if #excluded > 0 then
+            net.SendOmit(excluded)
+        else
+            net.Broadcast()
+        end
         return
     end
 

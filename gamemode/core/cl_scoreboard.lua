@@ -26,6 +26,20 @@ local matEdge = Material("materials/jailbreak_excl/scoreboard_edge.png")
 local matMiddle = Material("materials/jailbreak_excl/scoreboard_middle.png")
 local matAva = Material("materials/jailbreak_excl/scoreboard_avatar.png")
 local color_faded = Color(0, 0, 0, 100)
+local function getScoreTeam(ent)
+    if not IsValid(ent) then return TEAM_UNASSIGNED end
+    if isfunction(ent.Team) then return ent:Team() end
+    return TEAM_UNASSIGNED
+end
+
+local function getScoreName(ent)
+    return ent:Nick()
+end
+
+local function isScoreAlive(ent)
+    return ent:Alive()
+end
+
 vgui.Register("JBScoreboard.PlayerRow", {
     Init = function(self)
         self.Avatar = vgui.Create("AvatarImage", self)
@@ -42,7 +56,15 @@ vgui.Register("JBScoreboard.PlayerRow", {
     end,
     Setup = function(self, pl)
         self.Player = pl
-        self.Avatar:SetPlayer(pl, 32)
+        if pl:IsPlayer() then
+            self.Avatar:SetPlayer(pl, 32)
+        else
+            self.Avatar:Remove()
+            self.Avatar = vgui.Create("DImage", self)
+            self.Avatar:SetSize(32, 32)
+            self.Avatar:SetMouseInputEnabled(false)
+            self.Avatar:SetImage("icon16/user.png")
+        end
         self:Think()
         self:PerformLayout()
     end,
@@ -54,7 +76,7 @@ vgui.Register("JBScoreboard.PlayerRow", {
             return
         end
 
-        if not self.Player:Alive() then
+        if not isScoreAlive(self.Player) then
             self:SetZPos(1000)
         else
             self:SetZPos(0)
@@ -67,23 +89,24 @@ vgui.Register("JBScoreboard.PlayerRow", {
     Paint = function(self, w, h)
         if not IsValid(self.Player) then return end
         --rank
-        if self.Player:_jbGetRank() ~= "" then
+        local rank = self.Player:IsPlayer() and self.Player:_jbGetRank() or ""
+        if rank ~= "" then
             local x = 70
             surface.SetFont("JBExtraSmall")
-            local rankWidth, rankHeight = surface.GetTextSize(self.Player:_jbGetRank())
+            local rankWidth, rankHeight = surface.GetTextSize(rank)
             draw.RoundedBoxEx(6, x, 2, rankWidth + 12, rankHeight + 4, JB.Color.black, true, true, false, false)
             draw.RoundedBoxEx(4, x + 1, 3, rankWidth + 10, rankHeight + 4, JB.Color["#222"], true, true, false, false)
-            draw.SimpleText(self.Player:_jbGetRank(), "JBExtraSmall", x + 6, 8, white, 0, 1)
+            draw.SimpleText(rank, "JBExtraSmall", x + 6, 8, white, 0, 1)
         end
 
-        surface.SetDrawColor(self.Player:Alive() and JB.Color.white or JB.Color["#AAA"])
+        surface.SetDrawColor(isScoreAlive(self.Player) and JB.Color.white or JB.Color["#AAA"])
         surface.SetMaterial(matEdge)
         surface.DrawTexturedRectRotated(w - h / 2, h / 2, 64, 64, 180)
         surface.SetMaterial(matMiddle)
         surface.DrawTexturedRectRotated(math.Round(w / 2) - 16, h / 2, math.Round(w - 64 - 32), 64, 0)
     end,
     OnMouseReleased = function(self)
-        if LocalPlayer():IsAdmin() then
+        if LocalPlayer():IsAdmin() and self.Player:IsPlayer() then
             local m = DermaMenu()
             m:AddOption("Force swap", function() RunConsoleCommand("jb_admin_swap", self.Player:SteamID() or "0") end)
             m:AddOption("Make spectator", function() RunConsoleCommand("jb_admin_swap_spectator", self.Player:SteamID() or "0") end)
@@ -96,8 +119,9 @@ vgui.Register("JBScoreboard.PlayerRow", {
     end,
     PaintOver = function(self, _unused_115_34, h)
         if not IsValid(self.Player) then return end
-        local col = team.GetColor(self.Player:Team())
-        if not self.Player:Alive() then
+        local playerTeam = getScoreTeam(self.Player)
+        local col = team.GetColor(playerTeam)
+        if not isScoreAlive(self.Player) then
             col.r = math.Clamp(col.r * .6, 0, 255)
             col.g = math.Clamp(col.g * .6, 0, 255)
             col.b = math.Clamp(col.b * .6, 0, 255)
@@ -113,24 +137,30 @@ vgui.Register("JBScoreboard.PlayerRow", {
         surface.SetDrawColor(col)
         surface.SetMaterial(matAva)
         surface.DrawTexturedRectRotated(h / 2, h / 2, 64, 64, 0)
-        local playerColor = self.Player:Alive() and JB.Color.white or JB.Color["#BBB"]
+        local playerColor = isScoreAlive(self.Player) and JB.Color.white or JB.Color["#BBB"]
         --Name
-        local name = self.hover and (self.Player:Deaths() .. " rounds" or "") .. (self.Player:GetNWInt("killstreak") > 0 and ", Killstreak: " .. self.Player:GetNWInt("killstreak") or "") .. (ES and ", " .. math.floor(tonumber(self.Player:ESGetNetworkedVariable("playtime", 0)) / 60) .. " hours playtime" or "") or self.Player:Nick()
+        local name
+        if self.hover and self.Player:IsPlayer() then
+            name = self.Player:Deaths() .. " rounds" .. (self.Player:GetNWInt("killstreak") > 0 and ", Killstreak: " .. self.Player:GetNWInt("killstreak") or "") .. (ES and ", " .. math.floor(tonumber(self.Player:ESGetNetworkedVariable("playtime", 0)) / 60) .. " hours playtime" or "")
+        else
+            name = getScoreName(self.Player)
+        end
         draw.SimpleText(name, "JBSmallShadow", self.Avatar.x + self.Avatar:GetWide() + 16, h / 2 - 1, JB.Color.black, 0, 1)
         draw.SimpleText(name, "JBSmall", self.Avatar.x + self.Avatar:GetWide() + 16, h / 2 - 1, playerColor, 0, 1)
         --Ping
-        draw.SimpleText(self.Player:Ping(), "JBSmallShadow", self:GetWide() - 32 - 24, h / 2 - 1, JB.Color.black, 1, 1)
-        draw.SimpleText(self.Player:Ping(), "JBSmall", self:GetWide() - 32 - 24, h / 2 - 1, playerColor, 1, 1)
+        local ping = self.Player:IsPlayer() and self.Player:Ping() or "BOT"
+        draw.SimpleText(ping, "JBSmallShadow", self:GetWide() - 32 - 24, h / 2 - 1, JB.Color.black, 1, 1)
+        draw.SimpleText(ping, "JBSmall", self:GetWide() - 32 - 24, h / 2 - 1, playerColor, 1, 1)
         --score
         surface.SetDrawColor(color_faded)
         surface.DrawRect(self:GetWide() - 64 - 42, 16, 36, 32)
-        local score = self.Player:Frags() .. ":" .. self.Player:Deaths()
+        local score = self.Player:IsPlayer() and self.Player:Frags() .. ":" .. self.Player:Deaths() or "0:0"
         draw.SimpleText(score, "JBSmallShadow", self:GetWide() - 64 - 24, h / 2 - 1, JB.Color.black, 1, 1)
         draw.SimpleText(score, "JBSmall", self:GetWide() - 64 - 24, h / 2 - 1, white, 1, 1)
         --status
-        if self.Player.GetWarden and self.Player:GetWarden() then
+        if self.Player:GetWarden() then
             draw.SimpleText("Warden", "JBLargeBold", self:GetWide() / 2 + 26, 26, color_faded, 1)
-        elseif self.Player.GetRebel and self.Player:GetRebel() then
+        elseif self.Player:GetRebel() then
             draw.SimpleText("Rebel", "JBLargeBold", self:GetWide() / 2 + 30, 26, color_faded, 1)
         end
     end
@@ -150,7 +180,15 @@ vgui.Register("JBScoreboard.PlayerRow.Spectator", {
     end,
     Setup = function(self, pl)
         self.Player = pl
-        self.Avatar:SetPlayer(pl, 32)
+        if pl:IsPlayer() then
+            self.Avatar:SetPlayer(pl, 32)
+        else
+            self.Avatar:Remove()
+            self.Avatar = vgui.Create("DImage", self)
+            self.Avatar:SetSize(32, 32)
+            self.Avatar:SetMouseInputEnabled(false)
+            self.Avatar:SetImage("icon16/user.png")
+        end
         self:Think()
         self:PerformLayout()
     end,
@@ -192,7 +230,7 @@ vgui.Register("JBScoreboard.PlayerRow.Spectator", {
             draw.RoundedBox(2, w / 2 - w2 / 2, 0, w2, h, JB.Color.black)
             draw.RoundedBox(4, w / 2 - w2 / 2 + 2, 2, w2 - 4, h - 4, JB.Color["#111"])
             this.ColorText.a = Lerp(FrameTime() * 1, this.ColorText.a, 255)
-            w = JB.Util.drawSimpleShadowText(self.Player:Nick(), "JBSmall", w / 2, h / 2, this.ColorText, 1, 1)
+            w = JB.Util.drawSimpleShadowText(getScoreName(self.Player), "JBSmall", w / 2, h / 2, this.ColorText, 1, 1)
             this.wMv = Lerp(FrameTime() * 18, this.wMv or 8, w + 12)
         end
 
@@ -205,7 +243,7 @@ vgui.Register("JBScoreboard.PlayerRow.Spectator", {
     end,
     PaintOver = function(self, w, h)
         if not IsValid(self.Player) then return end
-        local col = team.GetColor(self.Player:Team())
+        local col = team.GetColor(getScoreTeam(self.Player))
         if self.Player == LocalPlayer() then
             local add = math.abs(math.sin(CurTime() * 1) * 50)
             col.r = math.Clamp(col.r + add, 0, 255)
@@ -359,40 +397,43 @@ vgui.Register("JBScoreboard", {
             self.Host:SetExpensiveShadow(1, color_shadow)
         end
 
-        for _unused_380_13, pl in pairs(player.GetAll()) do
+        local allPlayers = player.GetAll()
+        for _unused_380_13, pl in pairs(allPlayers) do
             if IsValid(pl.ScoreEntry) then
-                if pl:Team() ~= pl.ScoreEntry.Team or not IsValid(pl.ScoreEntry.scoreboard) or pl.ScoreEntry.scoreboard ~= self then
+                if getScoreTeam(pl) ~= pl.ScoreEntry.Team or not IsValid(pl.ScoreEntry.scoreboard) or pl.ScoreEntry.scoreboard ~= self then
                     JB:DebugPrint("Removed invalid score panel")
-                    pl.ScoreEntry:MakeInvalid()
+                    pl.ScoreEntry:Remove()
+                    pl.ScoreEntry = nil
                 else
                     continue
                 end
             end
 
-            if pl:Team() == TEAM_GUARD or pl:Team() == TEAM_PRISONER then
+            local playerTeam = getScoreTeam(pl)
+            if playerTeam == TEAM_GUARD or playerTeam == TEAM_PRISONER then
                 pl.ScoreEntry = vgui.Create("JBScoreboard.PlayerRow")
                 pl.ScoreEntry:Setup(pl)
-                if pl:Team() == TEAM_PRISONER then
+                if playerTeam == TEAM_PRISONER then
                     self.ScoresPrisoners:AddItem(pl.ScoreEntry)
                     pl.ScoreEntry.scoreboard = self
                     pl.ScoreEntry.Team = TEAM_PRISONER
-                elseif pl:Team() == TEAM_GUARD then
+                elseif playerTeam == TEAM_GUARD then
                     self.ScoresGuards:AddItem(pl.ScoreEntry)
                     pl.ScoreEntry.scoreboard = self
                     pl.ScoreEntry.Team = TEAM_GUARD
                 end
-            elseif pl:Team() == TEAM_SPECTATOR or pl:Team() == TEAM_UNASSIGNED then
+            elseif playerTeam == TEAM_SPECTATOR or playerTeam == TEAM_UNASSIGNED then
                 pl.ScoreEntry = self.ScoresSpectators:Add("JBScoreboard.PlayerRow.Spectator")
                 pl.ScoreEntry:Setup(pl)
                 pl.ScoreEntry.scoreboard = self
-                pl.ScoreEntry.Team = pl:Team()
+                pl.ScoreEntry.Team = playerTeam
             end
         end
     end,
 }, "Panel")
 
 timer.Create("JB.Scoreboard.UpdateLayout", 1, 0, function() if IsValid(scoreboard) then scoreboard:PerformLayout() end end)
-JB.Gamemode.ScoreboardShow = function()
+local jailbreakScoreboardShow = function()
     if not IsValid(scoreboard) then scoreboard = vgui.Create("JBScoreboard") end
     if IsValid(scoreboard) then
         scoreboard.Expand = true
@@ -404,9 +445,23 @@ JB.Gamemode.ScoreboardShow = function()
     end
 end
 
-JB.Gamemode.ScoreboardHide = function()
+local jailbreakScoreboardHide = function()
     if IsValid(scoreboard) then
         scoreboard.Expand = false
         gui.EnableScreenClicker(false)
     end
 end
+
+JB.Gamemode.ScoreboardShow = jailbreakScoreboardShow
+JB.Gamemode.ScoreboardHide = jailbreakScoreboardHide
+
+hook.Add("InitPostEntity", "JB.Scoreboard.RestoreAfterGamemodeOverrides", function()
+    timer.Simple(0, function()
+        JB.Gamemode.ScoreboardShow = jailbreakScoreboardShow
+        JB.Gamemode.ScoreboardHide = jailbreakScoreboardHide
+        if GAMEMODE then
+            GAMEMODE.ScoreboardShow = jailbreakScoreboardShow
+            GAMEMODE.ScoreboardHide = jailbreakScoreboardHide
+        end
+    end)
+end)

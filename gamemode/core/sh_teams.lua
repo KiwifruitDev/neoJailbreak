@@ -21,22 +21,37 @@ JB.Gamemode.CreateTeams = function()
     team.SetSpawnPoint(TEAM_SPECTATOR, "worldspawn")
 end
 
+function JB:GetTeamPlayers(teamID)
+    local players = team.GetPlayers(teamID)
+    return players
+end
+
+function JB:IsAlive(ent)
+    if not IsValid(ent) then return false end
+    return ent:Alive()
+end
+
 -- Utility functions
 function JB:GetGuardsAllowed()
-    if #team.GetPlayers(TEAM_GUARD) <= 0 then return 1 end
-    return math.ceil((#team.GetPlayers(TEAM_GUARD) + #team.GetPlayers(TEAM_PRISONER)) * tonumber(JB.Config.guardsAllowed) / 100)
+    local guards = #JB:GetTeamPlayers(TEAM_GUARD)
+    if guards <= 0 then return 1 end
+    return math.ceil((guards + #JB:GetTeamPlayers(TEAM_PRISONER)) * tonumber(JB.Config.guardsAllowed) / 100)
 end
 
 function JB:BalanceTeams()
-    if #team.GetPlayers(TEAM_GUARD) + #team.GetPlayers(TEAM_PRISONER) <= 1 then return end
+    local guards = JB:GetTeamPlayers(TEAM_GUARD)
+    local prisoners = JB:GetTeamPlayers(TEAM_PRISONER)
+    if #guards + #prisoners <= 1 then return end
     local balls = {}
-    if #team.GetPlayers(TEAM_GUARD) > JB:GetGuardsAllowed() then
-        for _unused_52_13 = 1, #team.GetPlayers(TEAM_GUARD) - JB:GetGuardsAllowed() do
-            local ply = table.Random(team.GetPlayers(TEAM_GUARD))
+    if #guards > JB:GetGuardsAllowed() then
+        for _unused_52_13 = 1, #guards - JB:GetGuardsAllowed() do
+            local ply = table.Random(guards)
             if IsValid(ply) then
                 ply:SetTeam(TEAM_PRISONER)
-                ply:ChatPrint("You were moved to Prisoners to make the game more fair.")
+                if ply:IsPlayer() then ply:ChatPrint("You were moved to Prisoners to make the game more fair.") end
                 balls[#balls + 1] = ply
+                table.RemoveByValue(guards, ply)
+                prisoners[#prisoners + 1] = ply
             end
         end
     end
@@ -46,16 +61,16 @@ end
 local count
 function JB:AliveGuards()
     count = 0
-    for _, v in pairs(team.GetPlayers(TEAM_GUARD)) do
-        if v:Alive() then count = count + 1 end
+    for _, v in pairs(JB:GetTeamPlayers(TEAM_GUARD)) do
+        if JB:IsAlive(v) then count = count + 1 end
     end
     return count
 end
 
 function JB:AlivePrisoners()
     count = 0
-    for _, v in pairs(team.GetPlayers(TEAM_PRISONER)) do
-        if v:Alive() then count = count + 1 end
+    for _, v in pairs(JB:GetTeamPlayers(TEAM_PRISONER)) do
+        if JB:IsAlive(v) then count = count + 1 end
     end
     return count
 end

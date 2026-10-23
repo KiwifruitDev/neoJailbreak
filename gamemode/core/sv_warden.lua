@@ -11,11 +11,11 @@
     See LICENSE for copyright attribution and licensing information.
 ]]--
 
-local function claimWarden(p, _unused_32_33, _unused_32_37)
-    if not IsValid(p) or p:Team() ~= TEAM_GUARD or JB.State ~= STATE_SETUP or IsValid(JB:GetWarden()) then return end
-    if p.wardenRounds and p.wardenRounds >= tonumber(JB.Config.maxWardenRounds) and CurTime() - JB.RoundStartTime < 20 then
+function JB:ClaimWarden(p, automatic)
+    if not IsValid(p) or p:Team() ~= TEAM_GUARD or JB.State ~= STATE_SETUP or IsValid(JB:GetWarden()) then return false end
+    if not automatic and p.wardenRounds and p.wardenRounds >= tonumber(JB.Config.maxWardenRounds) and CurTime() - JB.RoundStartTime < 20 then
         p:SendQuickNotification("You have to give others a chance to claim warden.")
-        return
+        return false
     end
 
     for _, ply in ipairs(player.GetAll()) do
@@ -34,6 +34,11 @@ local function claimWarden(p, _unused_32_33, _unused_32_37)
     end
 
     hook.Call("JailBreakClaimWarden", JB.Gamemode, p, p.wardenRounds)
+    return true
+end
+
+local function claimWarden(p, _unused_32_33, _unused_32_37)
+    JB:ClaimWarden(p)
 end
 
 JB.Util.addChatCommand("warden", claimWarden)
@@ -74,6 +79,12 @@ local function spawnProp(p, typ, model)
     prop:Activate()
     prop.wardenSpawned = true
     hook.Call("JailBreakWardenSpawnProp", JB.Gamemode, p, typ, model)
+end
+
+function JB:WardenSpawnProp(p, typ, model)
+    if not IsValid(p) or not p.GetWarden or not p:GetWarden() or not tobool(JB.Config.wardenControl) then return false end
+    spawnProp(p, typ, model)
+    return true
 end
 
 local function adminSpawn(p, typ, model)
@@ -125,13 +136,13 @@ concommand.Add("jb_warden_spawn", function(p, _unused_158_51, a)
     if not opt then
         return
     elseif opt == "HotDog" then
-        spawnProp(p, "jb_hotdog")
+        JB:WardenSpawnProp(p, "jb_hotdog")
     elseif opt == "Crate" then
-        spawnProp(p, "prop_physics_multiplayer", "models/props_junk/wood_crate001a.mdl")
+        JB:WardenSpawnProp(p, "prop_physics_multiplayer", "models/props_junk/wood_crate001a.mdl")
     elseif opt == "Blockade" then
-        spawnProp(p, "prop_physics_multiplayer", "models/props_trainstation/TrackSign02.mdl")
+        JB:WardenSpawnProp(p, "prop_physics_multiplayer", "models/props_trainstation/TrackSign02.mdl")
     elseif opt == "AmmoBox" then
-        spawnProp(p, "jb_ammobox")
+        JB:WardenSpawnProp(p, "jb_ammobox")
     end
 end)
 
@@ -173,6 +184,16 @@ concommand.Add("jb_warden_scriptday", function(p, _unused_174_55, a)
 end)
 
 local pointerRemove = -1
+function JB:WardenPlacePointer(p, typ, pos)
+    if not IsValid(p) or not p.GetWarden or not p:GetWarden() or not IsValid(JB.TRANSMITTER) then return false end
+    if not isvector(pos) then return false end
+    JB.TRANSMITTER:SetJBWarden_PointerPos(pos)
+    JB.TRANSMITTER:SetJBWarden_PointerType(typ)
+    pointerRemove = CurTime() + 120
+    hook.Call("JailBreakWardenPlacePointer", JB.Gamemode, p, typ, pos)
+    return true
+end
+
 concommand.Add("jb_warden_placepointer", function(p, _unused_228_58, a)
     if not IsValid(p) or not p.GetWarden or not p:GetWarden() then return end
     local typ = tostring(a[1])
