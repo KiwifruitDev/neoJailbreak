@@ -77,6 +77,7 @@ end
 
 JB.Gamemode.IsSpawnpointSuitable = function() return true end
 JB.Gamemode.PlayerDeath = function(_unused_97_37, victim, weapon, killer)
+    local killerIsPlayer = IsValid(killer) and killer:IsPlayer()
     victim:StripWeapons()
     if victim == killer and victim:GetNWInt("killstreak") >= 4 then
         if victim:Team() == 1 then --accounce death sfx for those who have killstreaks
@@ -109,32 +110,32 @@ JB.Gamemode.PlayerDeath = function(_unused_97_37, victim, weapon, killer)
         victim:SendLua(string.format("surface.PlaySound(%q)", table.Random(randomGhostSFX)))
     end
 
-    if victim:GetNWInt("killstreak") >= 4 and killer ~= victim and killer:Alive() then
+    if victim:GetNWInt("killstreak") >= 4 and killerIsPlayer and killer ~= victim and killer:Alive() then
         JB:BroadcastNotification(string.upper(killer:Nick()) .. " ENDED " .. string.upper(victim:Nick()) .. "'s KILLSTREAK OF " .. victim:GetNWInt("killstreak") .. "!")
-    elseif victim:GetNWInt("killstreak") >= 4 and killer == victim then
+    elseif victim:GetNWInt("killstreak") >= 4 and killerIsPlayer and killer == victim then
         JB:BroadcastNotification(string.upper(killer:Nick()) .. " HAS ENDED THEIR OWN KILLSTREAK OF " .. victim:GetNWInt("killstreak") .. "!")
     end
 
-    if killer ~= victim and killer:IsValid() and killer:GetNWInt("killstreakkit") == 1 and killer:Alive() then --killstreaks
+    if killerIsPlayer and killer ~= victim and killer:GetNWInt("killstreakkit") == 1 and killer:Alive() then --killstreaks
         killer:SetNWInt("killstreak", killer:GetNWInt("killstreak") + 1)
     end
 
-    if killer:IsValid() and killer:GetNWInt("killstreak") == 2 and killer ~= victim and killer:Alive() then
+    if killerIsPlayer and killer:GetNWInt("killstreak") == 2 and killer ~= victim and killer:Alive() then
         JB:BroadcastNotification(string.upper(killer:Nick()) .. " IS ON A KILLING SPREE! - " .. killer:GetNWInt("killstreak") .. " KILLS") --2
         for _, ply in ipairs(player.GetAll()) do
             ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_01.wav"))
         end
-    elseif killer:IsValid() and killer:GetNWInt("killstreak") > 2 and killer:GetNWInt("killstreak") < 4 and killer ~= victim and killer:Alive() then
+    elseif killerIsPlayer and killer:GetNWInt("killstreak") > 2 and killer:GetNWInt("killstreak") < 4 and killer ~= victim and killer:Alive() then
         JB:BroadcastNotification(string.upper(killer:Nick()) .. " IS STILL ON A KILLING SPREE! - " .. killer:GetNWInt("killstreak") .. " KILLS") --3
         for _, ply in ipairs(player.GetAll()) do
             ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_01_kill.wav"))
         end
-    elseif killer:IsValid() and killer:GetNWInt("killstreak") == 4 and killer ~= victim and killer:Alive() then
+    elseif killerIsPlayer and killer:GetNWInt("killstreak") == 4 and killer ~= victim and killer:Alive() then
         JB:BroadcastNotification(string.upper(killer:Nick()) .. " IS UNSTOPPABLE! - " .. killer:GetNWInt("killstreak") .. " KILLS") --4
         for _, ply in ipairs(player.GetAll()) do
             ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_02.wav"))
         end
-    elseif killer:IsValid() and killer:GetNWInt("killstreak") > 4 and killer:GetNWInt("killstreak") < 7 and killer ~= victim and killer:Alive() then
+    elseif killerIsPlayer and killer:GetNWInt("killstreak") > 4 and killer:GetNWInt("killstreak") < 7 and killer ~= victim and killer:Alive() then
         local ks = killer:GetNWInt("killstreak")
         JB:BroadcastNotification(string.upper(killer:Nick()) .. " IS STILL UNSTOPPABLE! - " .. ks) --5 / 6
         for _, ply in ipairs(player.GetAll()) do
@@ -144,29 +145,29 @@ JB.Gamemode.PlayerDeath = function(_unused_97_37, victim, weapon, killer)
                 ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_02_kill_01.wav"))
             end
         end
-    elseif killer:IsValid() and killer:GetNWInt("killstreak") == 7 and killer ~= victim and killer:Alive() then
+    elseif killerIsPlayer and killer:GetNWInt("killstreak") == 7 and killer ~= victim and killer:Alive() then
         JB:BroadcastNotification(string.upper(killer:Nick()) .. " IS ON A RAMPAGE! - " .. killer:GetNWInt("killstreak") .. " KILLS") --7
         for _, ply in ipairs(player.GetAll()) do
             ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_03.wav"))
         end
-    elseif killer:IsValid() and killer:GetNWInt("killstreak") > 7 and killer:GetNWInt("killstreak") < 9 and killer ~= victim and killer:Alive() then
+    elseif killerIsPlayer and killer:GetNWInt("killstreak") > 7 and killer:GetNWInt("killstreak") < 9 and killer ~= victim and killer:Alive() then
         JB:BroadcastNotification(string.upper(killer:Nick()) .. " IS STILL ON A RAMPAGE! - " .. killer:GetNWInt("killstreak") .. " KILLS") --8
         for _, ply in ipairs(player.GetAll()) do
             ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_03_kill_01.wav"))
         end
-    elseif killer:IsValid() and killer:GetNWInt("killstreak") == 9 and killer ~= victim and killer:Alive() then
+    elseif killerIsPlayer and killer:GetNWInt("killstreak") == 9 and killer ~= victim and killer:Alive() then
         JB:BroadcastNotification(string.upper(killer:Nick()) .. " IS GOD-LIKE! - " .. killer:GetNWInt("killstreak") .. " KILLS") --9
         for _, ply in ipairs(player.GetAll()) do
             ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_04.wav"))
         end
-    elseif killer:IsValid() and killer:GetNWInt("killstreak") > 9 and killer ~= victim and killer:Alive() then
+    elseif killerIsPlayer and killer:GetNWInt("killstreak") > 9 and killer ~= victim and killer:Alive() then
         JB:BroadcastNotification(string.upper(killer:Nick()) .. " IS STILL GOD-LIKE! - " .. killer:GetNWInt("killstreak") .. " KILLS") --10+
         for _, ply in ipairs(player.GetAll()) do
             ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_04_kill_01.wav"))
         end
     end
 
-    if IsValid(killer) then JB:DebugPrint(killer:Nick() .. " has a killstreak of " .. killer:GetNWInt("killstreak")) end
+    if killerIsPlayer then JB:DebugPrint(killer:Nick() .. " has a killstreak of " .. killer:GetNWInt("killstreak")) end
     victim:SendNotification("You are muted until the round ends")
     if victim.GetWarden and IsValid(JB.TRANSMITTER) and victim:GetWarden() then
         JB:BroadcastNotification("The warden has died")
@@ -180,12 +181,12 @@ JB.Gamemode.PlayerDeath = function(_unused_97_37, victim, weapon, killer)
         end)
     end
 
-    if IsValid(killer) and killer.IsPlayer and killer:IsPlayer() and killer:Team() == TEAM_PRISONER and victim:Team() == TEAM_GUARD and killer.AddRebelStatus and not killer:GetRebel() and tonumber(JB.Config.rebelSensitivity) >= 1 and JB.State ~= STATE_LASTREQUEST then
+    if killerIsPlayer and killer:Team() == TEAM_PRISONER and victim:Team() == TEAM_GUARD and killer.AddRebelStatus and not killer:GetRebel() and tonumber(JB.Config.rebelSensitivity) >= 1 and JB.State ~= STATE_LASTREQUEST then
         JB:DebugPrint(killer:Nick() .. "  is now a rebelnot !")
         killer:AddRebelStatus()
     end
 
-    if IsValid(killer) and killer.IsPlayer and killer:IsPlayer() and (killer:Team() == TEAM_GUARD or killer:Team() == TEAM_PRISONER) and killer:Alive() then
+    if killerIsPlayer and (killer:Team() == TEAM_GUARD or killer:Team() == TEAM_PRISONER) and killer:Alive() then
         JB:BroadcastQuickNotification(victim:Nick() .. " was killed by " .. killer:Nick())
     else
         JB:BroadcastQuickNotification(victim:Nick() .. " has died")
