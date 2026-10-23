@@ -25,7 +25,6 @@ function JB.MENU_GUNMENU()
     frame:SetTitle("Detective Dickhead")
     local yBottom = 30
     frame:SetWide(500)
-    --print(table.ToString(__roundweapon))
     local lbl = Label("Purchase " .. __roundweapon[1] .. " for " .. __roundweapon[2] .. " Pennies?", frame)
     lbl:SetFont("JBLarge")
     lbl:SetColor(JB.Color["#EEE"])

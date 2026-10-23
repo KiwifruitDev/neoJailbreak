@@ -55,7 +55,6 @@ function pmeta:SetupHands(ply)
     end
 
     local oldhands = self:GetHands()
-    print(self:GetHands())
     if IsValid(oldhands) then oldhands:Remove() end
     local hands = ents.Create("gmod_hands")
     if IsValid(hands) then

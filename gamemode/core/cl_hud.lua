@@ -142,13 +142,11 @@ hook.Add("Think", "JB.Think.PredictWardenFrame", function()
         warden:SetSize(0, 0)
         warden:Remove()
         warden = nil
-        print("removed warden")
     end
 
     if IsValid(JB:GetWarden()) and not IsValid(warden) then
         warden = vgui.Create("JBHUDWardenFrame")
         warden:SetPlayer(JB:GetWarden())
-        print("new warden")
         notification.AddLegacy(warden.Player:Nick() .. " is the warden", NOTICE_GENERIC)
     end
 end)
@@ -181,18 +179,15 @@ hook.Add("Think", "JB.Think.PredictKillstreakFrame", function()
     ply = LocalPlayer()
     if not IsValid(ply) then return end
     if not ply:Alive() then return end
-    --print(ply:GetNWInt("killstreak"))
     if IsValid(ks) and ply:GetNWInt("killstreak") <= 0 then
         ks:SetSize(0, 0)
         ks:Remove()
         ks = nil
-        print("removed ks")
     end
 
     if ply:GetNWInt("killstreak") >= 1 and not IsValid(ks) then
         ks = vgui.Create("JBHUDKillstreakFrame")
         ks:SetPlayer(JB:GetWarden())
-        print("new ks")
     end
 end)
 

@@ -88,7 +88,6 @@ end
 concommand.Add("jb_admin_spawn", function(p, _unused_106_50, a)
     if not IsValid(p) or not p:IsAdmin() then return end
     local opt = a[1]
-    print(opt)
     if not opt then
         return
     elseif opt == "HotDog" then
@@ -128,9 +127,7 @@ concommand.Add("jb_warden_grapplinghooks", function(p, _unused_141_60, _unused_1
         grapple:SetSlotName("sent_grapplehook_bpack")
         grapple:Spawn()
         grapple:SetKey(36)
-        print(grapple:GetKey() .. " 36")
         if not grapple:Attach(ply, true) then
-            print("removed grappling hook")
             grapple:Remove()
             return
         end
@@ -174,7 +171,6 @@ concommand.Add("jb_warden_scriptday", function(p, _unused_174_55, a)
         if lr == "GangWarDay" then
             JB:BroadcastNotification("The warden has initiated Gang War Day!")
             JB:BroadcastNotification("All prisoners now have grappling hooks!")
-            print("Gang War Day has started.")
             for _, ply in ipairs(player.GetAll()) do
                 ply:SendLua(string.format("surface.PlaySound(%q)", "otterjailbreak/gangwarday.wav"))
                 ply:StripWeapons()
@@ -191,9 +187,7 @@ concommand.Add("jb_warden_scriptday", function(p, _unused_174_55, a)
                 grapple:SetSlotName("sent_grapplehook_bpack")
                 grapple:Spawn()
                 grapple:SetKey(36)
-                print(grapple:GetKey() .. " 36")
                 if not grapple:Attach(ply, true) then
-                    print("removed grappling hook")
                     grapple:Remove()
                     return
                 end

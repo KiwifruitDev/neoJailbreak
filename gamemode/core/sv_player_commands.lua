@@ -97,7 +97,6 @@ local function teamSwitch(p, cmd)
     if not IsValid(p) then return end
     if cmd == "jb_team_select_guard" and JB:GetGuardsAllowed() > #team.GetPlayers(TEAM_GUARD) and p:Team() ~= TEAM_GUARD then
         if p:Alive() and JB.State ~= STATE_MAPVOTE and JB.State ~= STATE_IDLE and JB:AlivePrisoners() > 1 then
-            print(JB:AlivePrisoners())
             p:SendLua(string.format("surface.PlaySound(%q)", table.Random(randomGhostSFX)))
         end
 
@@ -108,7 +107,6 @@ local function teamSwitch(p, cmd)
         p:SetFrags(0)
         p:SetDeaths(0)
     elseif cmd == "jb_team_select_prisoner" and p:Team() ~= TEAM_PRISONER then
-        print(JB:AliveGuards())
         if p:Alive() and JB.State ~= STATE_MAPVOTE and JB.State ~= STATE_IDLE and JB:AliveGuards() > 1 then p:SendLua(string.format("surface.PlaySound(%q)", table.Random(randomGhostSFX))) end
         p:SetTeam(TEAM_PRISONER)
         p:KillSilent()

@@ -61,8 +61,6 @@ if SERVER then
         stateTime = CurTime() + time
         stateCallback = callback
     end
-
-    concommand.Add("testtime", function() print(stateTime, CurTime(), stateTime < CurTime()) end)
 end
 
 -- Utility functions
@@ -175,7 +173,6 @@ function JB:NewRound(rounds_passed)
     JB.ThisRound = {}
     if SERVER then
         __roundweapon = table.Random(randomWeapons)
-        print("round weapon: " .. __roundweapon[1])
         util.AddNetworkString("roundweapon")
         net.Start("roundweapon")
         net.WriteTable(__roundweapon)

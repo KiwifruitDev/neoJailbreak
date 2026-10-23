@@ -38,16 +38,13 @@ function PLAYER:Loadout()
     grapple:SetSlotName("sent_grapplehook_bpack")
     grapple:Spawn()
     grapple:SetKey(36)
-    print(grapple:GetKey() .. " 36")
     if not grapple:Attach(self.Player, true) then
-        print("removed grappling hook")
         grapple:Remove()
         return
     end
 
     self.Player:Give("weapon_jb_fists")
     if self.Player.GetNWString("guardweapon") then
-        print(self.Player.GetNWString("guardweapon", "None"))
         self.Player:Give(self.Player.GetNWString("guardweapon"))
         self.Player:GiveAmmo(self.Player.GetNWInt("guardammo"), self.Player.GetNWString("guardammotype"), true)
     end
@@ -64,7 +61,6 @@ end
 
 util.PrecacheModel("models/player/police.mdl")
 function PLAYER:SetModel()
-    print(self.Player._guardmodel)
     if self.Player._guardmodel then --after a rejoin or a map change/server restart, players need to re-equip the pointshop playermodel.
         self.Player:SetModel(self.Player._guardmodel)
     else

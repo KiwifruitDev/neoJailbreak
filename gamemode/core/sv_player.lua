@@ -102,7 +102,6 @@ JB.Gamemode.PlayerDeath = function(_unused_97_37, victim, weapon, killer)
         victim:EmitSound("/misc/ks_tier_03_death.wav")
     end
 
-    print(victim:Team() .. " " .. JB:AliveGuards())
     if victim:Team() == TEAM_GUARD and JB:AliveGuards() > 1 then --bg music, shouldn't be activated if it's the end of the round otherwise it will overlay the round end music
         victim:SendLua(string.format("surface.PlaySound(%q)", table.Random(randomGhostSFX)))
     elseif victim:Team() == TEAM_PRISONER and JB:AlivePrisoners() > 1 then

@@ -64,7 +64,6 @@ And an example playermodel lua file:
     function ITEM:OnHolster(ply)
         ply._guardmodel = nil
         if ply:Team() == self.Team then
-            print(self.Player._guardmodel)
             if self.Player._guardmodel then
                 self.Player:SetModel(self.Player._guardmodel)
             else

@@ -56,7 +56,6 @@ function JB.MENU_SCRIPTDAYS()
             btn_accept.OnMouseReleased = function()
                 --local Menu = DermaMenu()
                 --local btn = Menu:AddOption("Are you sure you want to start a Scriptday?", function()
-                print(lr_selected)
                 RunConsoleCommand("jb_warden_scriptday", lr_selected)
                 if IsValid(frame) then frame:Remove() end
                 --end)

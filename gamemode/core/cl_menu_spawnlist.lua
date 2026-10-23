@@ -39,7 +39,6 @@ function JB.MENU_SPAWNMENU()
         btn_accept:SetPos(30, right:GetTall() - 30 - btn_accept:GetTall())
         btn_accept:SetText("Spawn")
         btn_accept.OnMouseReleased = function()
-            print(lr_selected)
             RunConsoleCommand("jb_admin_spawn", lr_selected)
         end
 

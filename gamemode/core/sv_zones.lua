@@ -38,8 +38,6 @@ function JB.SaveZone(startpos, endpos, zoneid)
     JB.Zones[zoneid]["startpos"] = startpos
     JB.Zones[zoneid]["endpos"] = endpos
     file.Write("jailbreak/zones/" .. game.GetMap() .. ".txt", util.TableToJSON(JB.Zones))
-    print(startpos, endpos)
-    PrintTable(JB.Zones)
     return zoneid
 end
 
