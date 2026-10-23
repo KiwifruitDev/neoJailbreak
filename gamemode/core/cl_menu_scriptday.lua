@@ -104,7 +104,7 @@ function JB.MENU_SCRIPTDAYS()
             end
 
             --SCRIPTDAYS GO HERE AND IN SV_WARDEN.LUA--
-            createScriptDayEntry("Gang War Day", "Prisoners and guards are now the Bloods and Crips. Each team will have grappling hooks, Mac 10s, USPs, and knives to fight each other with.", "GangWarDay", Material("icon16/gun.png"))
+            createScriptDayEntry("Gang War Day", "Prisoners and guards are now the Bloods and Crips. Each team will have Mac 10s, USPs, and knives to fight each other with.", "GangWarDay", Material("icon16/gun.png"))
             frame:Center()
             frame:MakePopup()
         end

@@ -119,21 +119,6 @@ concommand.Add("jb_warden_opendoors", function(p, _unused_125_55, _unused_125_59
     end
 end)
 
-concommand.Add("jb_warden_grapplinghooks", function(p, _unused_141_60, _unused_141_64)
-    if not IsValid(p) or not p.GetWarden or not p:GetWarden() or not tobool(JB.Config.wardenControl) then return end
-    JB:BroadcastNotification("All prisoners now have grappling hooks!")
-    for _, ply in ipairs(team.GetPlayers(TEAM_PRISONER)) do
-        local grapple = ents.Create("sent_grapplehook_bpack")
-        grapple:SetSlotName("sent_grapplehook_bpack")
-        grapple:Spawn()
-        grapple:SetKey(36)
-        if not grapple:Attach(ply, true) then
-            grapple:Remove()
-            return
-        end
-    end
-end)
-
 concommand.Add("jb_warden_spawn", function(p, _unused_158_51, a)
     if not IsValid(p) or not p.GetWarden or not p:GetWarden() or not tobool(JB.Config.wardenControl) then return end
     local opt = a[1]
@@ -170,7 +155,6 @@ concommand.Add("jb_warden_scriptday", function(p, _unused_174_55, a)
         --ADD SCRIPTDAYS HERE AND IN SV_MENU_SCRIPTDAY.LUA--
         if lr == "GangWarDay" then
             JB:BroadcastNotification("The warden has initiated Gang War Day!")
-            JB:BroadcastNotification("All prisoners now have grappling hooks!")
             for _, ply in ipairs(player.GetAll()) do
                 ply:SendLua(string.format("surface.PlaySound(%q)", "otterjailbreak/gangwarday.wav"))
                 ply:StripWeapons()
@@ -179,18 +163,6 @@ concommand.Add("jb_warden_scriptday", function(p, _unused_174_55, a)
                 ply:Give("weapon_jb_usp")
                 ply:Give("weapon_jb_mac10")
                 ply:SelectWeapon("weapon_jb_mac10")
-            end
-
-            for _, ply in ipairs(team.GetPlayers(TEAM_PRISONER)) do
-                ply:SetModel("models/player/bloodz/slow_3.mdl")
-                local grapple = ents.Create("sent_grapplehook_bpack")
-                grapple:SetSlotName("sent_grapplehook_bpack")
-                grapple:Spawn()
-                grapple:SetKey(36)
-                if not grapple:Attach(ply, true) then
-                    grapple:Remove()
-                    return
-                end
             end
 
             for _, ply in ipairs(team.GetPlayers(TEAM_GUARD)) do
