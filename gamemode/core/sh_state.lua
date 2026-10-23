@@ -168,6 +168,15 @@ JB.ThisRound = {}
 local randomWeapons = {{"Mac 10", 75, "weapon_jb_mac10", 1}, {"Knife", 10, "weapon_jb_knife", 3}, {"Glock", 35, "weapon_jb_glock", 2}, {"AWP", 45, "weapon_jb_awp", 1}, {"AK-47", 50, "weapon_jb_ak47", 1}, {"FAMAS", 45, "weapon_jb_famas", 1}}
 __roundweapon = {"Mac 10", 75, "weapon_jb_mac10", 1}
 local wantStartup = false
+local function disableMapWeaponMotion()
+    for _, weapon in ipairs(ents.GetAll()) do
+        if weapon:IsWeapon() and weapon:MapCreationID() >= 0 then
+            local physicsObject = weapon:GetPhysicsObject()
+            if IsValid(physicsObject) then physicsObject:EnableMotion(false) end
+        end
+    end
+end
+
 function JB:NewRound(rounds_passed)
     rounds_passed = rounds_passed or JB.RoundsPassed
     JB.ThisRound = {}
@@ -229,6 +238,7 @@ function JB:NewRound(rounds_passed)
         end
 
         detective:Spawn()
+        timer.Simple(0, disableMapWeaponMotion)
         net.Start("JB.SendRoundUpdate")
         net.WriteInt(STATE_SETUP, 8)
         net.WriteInt(rounds_passed, 32)

@@ -13,10 +13,10 @@
 
 local randomGhostSFX = {"#otterjailbreak/lc_ghost01.mp3", "#otterjailbreak/lc_ghost02.mp3", "#otterjailbreak/lc_ghost03.mp3", "#otterjailbreak/lc_ghost04.mp3"}
 local undroppableWeapons = {"weapon_physcannon", "gmod_camera", "gmod_tool", "weapon_jb_fists"}
-local drop = function(ply)
+local dropWeapon = function(ply, weapon)
+    if not IsValid(ply) then return false end
     if table.HasValue(JB.LastRequestPlayers, ply) and JB.LastRequestTypes[JB.LastRequest] and not JB.LastRequestTypes[JB.LastRequest]:GetCanDropWeapons() then return end
     JB:DebugPrint(ply:Nick() .. " dropped his/her weapon")
-    local weapon = ply:GetActiveWeapon()
     for _, v in pairs(undroppableWeapons) do
         if IsValid(weapon) and v == weapon:GetClass() then return false end
     end
@@ -26,7 +26,14 @@ local drop = function(ply)
         weapon.IsDropped = true
         weapon.BeingPickedUp = false
         ply:DropWeapon(weapon)
+        return true
     end
+    return false
+end
+
+local drop = function(ply)
+    if not IsValid(ply) then return false end
+    return dropWeapon(ply, ply:GetActiveWeapon())
 end
 
 concommand.Add("jb_dropweapon", drop)
@@ -75,10 +82,41 @@ JB.Util.addChatCommand("forceround", fc)
 local pickup = function(p)
     local e = p:GetEyeTrace().Entity
     if table.HasValue(JB.LastRequestPlayers, p) and JB.LastRequestTypes[JB.LastRequest] and not JB.LastRequestTypes[JB.LastRequest]:GetCanPickupWeapons() then return end
-    if IsValid(e) and p:Alive() and p:CanPickupWeapon(e) then
-        e.BeingPickedUp = p
-        JB:DamageLog_AddPlayerPickup(p, e:GetClass())
+    if not IsValid(e) or not p:Alive() then return end
+
+    local swapWeapon
+    if e:IsWeapon() and e.Slot ~= nil then
+        for _, weapon in ipairs(p:GetWeapons()) do
+            if IsValid(weapon) and weapon.Slot == e.Slot and weapon:GetClass() ~= "weapon_jb_fists" then
+                swapWeapon = weapon
+                break
+            end
+        end
     end
+
+    if swapWeapon then
+        if table.HasValue(JB.LastRequestPlayers, p) and JB.LastRequestTypes[JB.LastRequest] and not JB.LastRequestTypes[JB.LastRequest]:GetCanDropWeapons() then return end
+        local targetPos, targetAngles
+        local targetPhysics = e:GetPhysicsObject()
+        local targetFrozen = IsValid(targetPhysics) and not targetPhysics:IsMotionEnabled()
+        if targetFrozen then
+            targetPos = e:GetPos()
+            targetAngles = e:GetAngles()
+        end
+
+        if not dropWeapon(p, swapWeapon) then return end
+        if targetFrozen then
+            swapWeapon:SetPos(targetPos)
+            swapWeapon:SetAngles(targetAngles)
+            local swapPhysics = swapWeapon:GetPhysicsObject()
+            if IsValid(swapPhysics) then swapPhysics:EnableMotion(false) end
+        end
+    elseif not p:CanPickupWeapon(e) then
+        return
+    end
+
+    e.BeingPickedUp = p
+    JB:DamageLog_AddPlayerPickup(p, e:GetClass())
 end
 
 concommand.Add("jb_pickup", pickup)

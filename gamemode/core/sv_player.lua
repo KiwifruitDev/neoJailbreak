@@ -66,7 +66,15 @@ JB.Gamemode.PlayerSpawn = function(gm, ply)
     ply._jb_forceRespawn = false
     ply:StripWeapons()
     ply:StripAmmo()
+    ply:SetNWBool("jb_has_weapon", false)
     gm.BaseClass.PlayerSpawn(gm, ply)
+    for _, weapon in ipairs(ply:GetWeapons()) do
+        if IsValid(weapon) and weapon:GetClass() ~= "weapon_jb_fists" then
+            ply:SetNWBool("jb_has_weapon", true)
+            break
+        end
+    end
+
     ply:SetNWInt("killstreak", 0) --ffs get rid of your killstreak
     ply:SetNWBool("boughtweapon", false)
     ply.originalRunSpeed = ply:GetRunSpeed()
@@ -93,6 +101,18 @@ JB.Gamemode.PlayerCanPickupWeapon = function(_, ply, entity)
     end
     return true
 end
+
+hook.Add("WeaponEquip", "JB.WeaponEquip.AutoSelect", function(weapon, ply)
+    if not IsValid(weapon) or not IsValid(ply) or weapon:GetClass() == "weapon_jb_fists" then return end
+    local class = weapon:GetClass()
+    ply:SetNWBool("jb_has_weapon", true)
+    timer.Simple(0, function()
+        if IsValid(weapon) and IsValid(ply) and weapon:GetOwner() == ply then
+            ply:SelectWeapon(class)
+            ply:SendLua(string.format("surface.PlaySound(%q)", "common/wpn_select.wav"))
+        end
+    end)
+end)
 
 JB.Gamemode.PlayerShouldTakeDamage = function(_, a, b)
     if IsValid(a) and IsValid(b) then

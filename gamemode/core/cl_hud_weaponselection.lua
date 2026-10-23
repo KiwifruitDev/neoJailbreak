@@ -97,6 +97,57 @@ function JB.Gamemode:PlayerBindPress(_, bind, pressed)
         end
     end
 
+    local fastSwitch = GetConVar("hud_fastswitch")
+    if fastSwitch and fastSwitch:GetBool() then
+        local ply = LocalPlayer()
+        if string.find(bind, "invnext") or string.find(bind, "invprev") then
+            if not check() then return false end
+            if LocalPlayer():Team() > 2 or not LocalPlayer():Alive() then return true end
+            local activeWeapon = ply:GetActiveWeapon()
+            local slot = IsValid(activeWeapon) and activeWeapon.Slot and activeWeapon.Slot + 1 or nScroll
+            local direction = string.find(bind, "invnext") and 1 or -1
+            for _ = 1, 4 do
+                slot = slot + direction
+                if slot > 4 then slot = 1 end
+                if slot < 1 then slot = 4 end
+                selectedTab = 0
+                ArrangeSlots()
+                if slots[slot] and slots[slot][1] then
+                    nScroll = slot
+                    local weapon = slots[slot][1]
+                    if not IsValid(weapon) then return true end
+                    if activeWeapon ~= weapon then
+                        RunConsoleCommand("use", weapon:GetClass())
+                        surface.PlaySound("common/wpn_hudoff.wav")
+                    end
+
+                    return true
+                end
+            end
+
+            return true
+        end
+
+        local slot = string.find(bind, "slot1") and 1 or string.find(bind, "slot2") and 2 or string.find(bind, "slot3") and 3 or string.find(bind, "slot4") and 4
+        if slot then
+            if LocalPlayer():Team() > 2 or not LocalPlayer():Alive() then return true end
+            selectedTab = 0
+            ArrangeSlots()
+            local weapon = slots[slot] and slots[slot][1]
+            if not IsValid(weapon) then
+                surface.PlaySound("common/wpn_denyselect.wav")
+                return true
+            end
+
+            if ply:GetActiveWeapon() ~= weapon then
+                RunConsoleCommand("use", weapon:GetClass())
+                surface.PlaySound("common/wpn_hudoff.wav")
+            end
+
+            return true
+        end
+    end
+
     if string.find(bind, "invnext") and check() == true then
         if LocalPlayer():Team() > 2 or not LocalPlayer():Alive() then return true end
         nScroll = nScroll + 1

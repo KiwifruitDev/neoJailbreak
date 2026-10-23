@@ -415,6 +415,11 @@ JB.Gamemode.HUDPaint = function()
     end
 
     drawTimer()
+    if ply:Alive() and ply:Team() == TEAM_GUARD and not ply:GetNWBool("jb_has_weapon", false) then
+        drawSimpleShadowText("UNARMED", "JBNormal", scrW / 2, scrH - 64, JB.Color.white, 1, 1)
+        drawSimpleShadowText("Pick up a weapon to arm yourself.", "JBSmall", scrW / 2, scrH - 38, JB.Color.white, 1, 1)
+    end
+
     if JB.State == STATE_LASTREQUEST and JB.LastRequest ~= "0" then drawLastRequest() end
     if #teamGetPlayers(TEAM_GUARD) < 1 or #teamGetPlayers(TEAM_PRISONER) < 1 then
         drawText("A new round can not start until there is at least one player on both teams.\nWait for somebody to join the empty team.", "JBNormalShadow", scrW / 2, scrH * .6, JB.Color.black, 1, 1)
@@ -445,7 +450,24 @@ JB.Gamemode.HUDDrawTargetID = function()
             text_sub = "Can not pick up in LR"
         else
             local bind = inputLookupBinding("+use")
-            text_sub = ent:GetPos():Distance(LocalPlayer():EyePos()) > 200 and "" or not bind and "Bind a key to +use to pick up" or "Press " .. bind .. " to pick up"
+            local swapWeapon
+            if tab and tab.Slot ~= nil then
+                for _, weapon in ipairs(LocalPlayer():GetWeapons()) do
+                    if IsValid(weapon) and weapon.Slot == tab.Slot and weapon:GetClass() ~= "weapon_jb_fists" then
+                        swapWeapon = weapon
+                        break
+                    end
+                end
+            end
+
+            if ent:GetPos():Distance(LocalPlayer():EyePos()) > 200 then
+                text_sub = ""
+            elseif IsValid(swapWeapon) then
+                local swapName = swapWeapon.PrintName or swapWeapon:GetClass()
+                text_sub = not bind and "Bind a key to +use to swap with " .. swapName or "Press " .. bind .. " to swap with " .. swapName
+            else
+                text_sub = not bind and "Bind a key to +use to pick up" or "Press " .. bind .. " to pick up"
+            end
         end
 
         text_color = JB.Color.white
