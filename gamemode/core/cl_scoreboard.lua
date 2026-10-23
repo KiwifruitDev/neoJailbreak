@@ -120,7 +120,7 @@ vgui.Register("JBScoreboard.PlayerRow", {
     PaintOver = function(self, _, h)
         if not IsValid(self.Player) then return end
         local playerTeam = getScoreTeam(self.Player)
-        local col = team.GetColor(playerTeam)
+        local col = JB:GetTeamColor(playerTeam)
         if not isScoreAlive(self.Player) then
             col.r = math.Clamp(col.r * .6, 0, 255)
             col.g = math.Clamp(col.g * .6, 0, 255)
@@ -243,7 +243,7 @@ vgui.Register("JBScoreboard.PlayerRow.Spectator", {
     end,
     PaintOver = function(self, w, h)
         if not IsValid(self.Player) then return end
-        local col = team.GetColor(getScoreTeam(self.Player))
+        local col = JB:GetTeamColor(getScoreTeam(self.Player))
         if self.Player == LocalPlayer() then
             local add = math.abs(math.sin(CurTime() * 1) * 50)
             col.r = math.Clamp(col.r + add, 0, 255)

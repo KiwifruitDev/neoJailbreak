@@ -11,7 +11,7 @@
     See LICENSE for copyright attribution and licensing information.
 ]]--
 
-local randomGhostSFX = {"otterjailbreak/lc_ghost01.mp3", "otterjailbreak/lc_ghost02.mp3", "otterjailbreak/lc_ghost03.mp3", "otterjailbreak/lc_ghost04.mp3"}
+local randomGhostSFX = {"#otterjailbreak/lc_ghost01.mp3", "#otterjailbreak/lc_ghost02.mp3", "#otterjailbreak/lc_ghost03.mp3", "#otterjailbreak/lc_ghost04.mp3"}
 local undroppableWeapons = {"weapon_physcannon", "gmod_camera", "gmod_tool", "weapon_jb_fists"}
 local drop = function(ply)
     if table.HasValue(JB.LastRequestPlayers, ply) and JB.LastRequestTypes[JB.LastRequest] and not JB.LastRequestTypes[JB.LastRequest]:GetCanDropWeapons() then return end

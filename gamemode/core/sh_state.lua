@@ -279,11 +279,7 @@ function JB:EndRound(winner)
             end
         end
 
-        if JB.TRANSMITTER:GetJBScriptday() == "GangWarDay" then
-            notification.AddLegacy(winner == TEAM_PRISONER and "Bloods win" or winner == TEAM_GUARD and "Crips win" or "Draw", NOTIFY_GENERIC)
-        else
-            notification.AddLegacy(winner == TEAM_PRISONER and "Prisoners win" or winner == TEAM_GUARD and "Guards win" or "Draw", NOTIFY_GENERIC)
-        end
+        notification.AddLegacy(JB:GetRoundEndMessage(winner), NOTIFY_GENERIC)
     end
 
     hook.Call("JailBreakRoundEnd", JB.Gamemode, JB.RoundsPassed)

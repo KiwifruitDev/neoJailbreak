@@ -148,39 +148,29 @@ end)
 
 concommand.Add("jb_warden_scriptday", function(p, _, a)
     if not IsValid(p) or not p.GetWarden or not p:GetWarden() or not tobool(JB.Config.wardenControl) then return end
-    if IsValid(JB.TRANSMITTER) and JB.TRANSMITTER:GetJBScriptday() == "" then
-        local lr = a[1]
-        JB.TRANSMITTER:SetJBScriptday(lr)
-        for _, v in ipairs(ents.FindByClass("func_door")) do
-            v:Fire("Open", 1)
-        end
+    if not IsValid(JB.TRANSMITTER) or JB.TRANSMITTER:GetJBScriptday() ~= "" then return end
+    local scriptdayID = a[1]
+    local scriptday = JB:GetScriptday(scriptdayID)
+    if not scriptday then return end
 
-        for _, v in ipairs(ents.FindByClass("func_door_rotating")) do
-            v:Fire("Open", 1)
-        end
-
-        for _, v in ipairs(ents.FindByClass("func_movelinear")) do
-            v:Fire("Open", 1)
-        end
-
-        --ADD SCRIPTDAYS HERE AND IN SV_MENU_SCRIPTDAY.LUA--
-        if lr == "GangWarDay" then
-            JB:BroadcastNotification("The warden has initiated Gang War Day!")
-            for _, ply in ipairs(player.GetAll()) do
-                ply:SendLua(string.format("surface.PlaySound(%q)", "otterjailbreak/gangwarday.wav"))
-                ply:StripWeapons()
-                ply:Give("weapon_jb_fists")
-                ply:Give("weapon_jb_knife")
-                ply:Give("weapon_jb_usp")
-                ply:Give("weapon_jb_mac10")
-                ply:SelectWeapon("weapon_jb_mac10")
-            end
-
-            for _, ply in ipairs(team.GetPlayers(TEAM_GUARD)) do
-                ply:SetModel("models/player/cripz/slow_3.mdl")
-            end
-        end
+    JB.TRANSMITTER:SetJBScriptday(scriptdayID)
+    for _, v in ipairs(ents.FindByClass("func_door")) do
+        v:Fire("Open", 1)
     end
+
+    for _, v in ipairs(ents.FindByClass("func_door_rotating")) do
+        v:Fire("Open", 1)
+    end
+
+    for _, v in ipairs(ents.FindByClass("func_movelinear")) do
+        v:Fire("Open", 1)
+    end
+
+    if isfunction(scriptday.Start) then
+        scriptday.Start(p)
+    end
+
+    hook.Call("JailBreakScriptdayStarted", JB.Gamemode, p, scriptdayID, scriptday)
 end)
 
 local pointerRemove = -1

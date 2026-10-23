@@ -11,12 +11,12 @@
     See LICENSE for copyright attribution and licensing information.
 ]]--
 
-local randomGhostSFX = {"otterjailbreak/lc_ghost01.mp3", "otterjailbreak/lc_ghost02.mp3", "otterjailbreak/lc_ghost03.mp3", "otterjailbreak/lc_ghost04.mp3"}
+local randomGhostSFX = {"#otterjailbreak/lc_ghost01.mp3", "#otterjailbreak/lc_ghost02.mp3", "#otterjailbreak/lc_ghost03.mp3", "#otterjailbreak/lc_ghost04.mp3"}
 JB.Gamemode.PlayerInitialSpawn = function(_, ply)
     ply:SetTeam(TEAM_PRISONER) -- always spawn as prisoner
     JB:DebugPrint(ply:Nick() .. " has successfully joined the server.")
     --ply:ConCommand("snd_restart") --if they join the server with the content addon, their sound may not work properly
-    ply:SendLua(string.format("surface.PlaySound(%q)", "otterjailbreak/waitingforplayers.wav"))
+    ply:SendLua(string.format("surface.PlaySound(%q)", "#otterjailbreak/waitingforplayers.wav"))
 end
 
 function JB.Gamemode:OnPhysgunReload(_, ply)

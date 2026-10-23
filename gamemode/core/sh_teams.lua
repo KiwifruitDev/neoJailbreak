@@ -26,6 +26,19 @@ function JB:GetTeamPlayers(teamID)
     return players
 end
 
+function JB:GetTeamColor(teamID)
+    local color
+    if teamID == TEAM_GUARD then
+        color = JB.Color["#0066FF"]
+    elseif teamID == TEAM_PRISONER then
+        color = JB.Color["#E31100"]
+    else
+        color = team.GetColor(teamID)
+    end
+
+    return Color(color.r, color.g, color.b, color.a)
+end
+
 function JB:IsAlive(ent)
     if not IsValid(ent) then return false end
     return ent:Alive()

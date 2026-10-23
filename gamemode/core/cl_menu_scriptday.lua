@@ -76,7 +76,7 @@ function JB.MENU_SCRIPTDAYS()
                 lbl_ScriptdayDetails:SetWrap(true)
             end
 
-            function createScriptDayEntry(name, description, func, icon)
+            local function createScriptDayEntry(name, description, id, icon)
                 local pnl = vgui.Create("JB.Panel", left)
                 pnl:SetTall(26)
                 pnl:Dock(TOP)
@@ -97,14 +97,15 @@ function JB.MENU_SCRIPTDAYS()
                 local dummy = vgui.Create("Panel", pnl)
                 dummy:SetSize(pnl:GetWide(), pnl:GetTall())
                 dummy:SetPos(0, 0)
-                dummy.OnMouseReleased = function() selectScriptday(name, description, func, icon) end
+                dummy.OnMouseReleased = function() selectScriptday(name, description, id, icon) end
                 dummy.OnCursorEntered = function() pnl.Hover = true end
                 dummy.OnCursorExited = function() pnl.Hover = false end
                 pnl.PerformLayout = function(self) dummy:SetSize(self:GetWide(), self:GetTall()) end
             end
 
-            --SCRIPTDAYS GO HERE AND IN SV_WARDEN.LUA--
-            createScriptDayEntry("Gang War Day", "Prisoners and guards are now the Bloods and Crips. Each team will have Mac 10s, USPs, and knives to fight each other with.", "GangWarDay", Material("icon16/gun.png"))
+            for _, scriptday in ipairs(JB:GetScriptdays()) do
+                createScriptDayEntry(scriptday.Name, scriptday.Description, scriptday.ID, Material(scriptday.Icon))
+            end
             frame:Center()
             frame:MakePopup()
         end

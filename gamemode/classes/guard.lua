@@ -35,9 +35,13 @@ end
 --local randomGuardPrimary = {"weapon_jb_ak47", "weapon_jb_aug", "weapon_jb_galil", "weapon_jb_m4a1", "weapon_jb_mac10", "weapon_jb_mp5navy", "weapon_jb_p90", "weapon_jb_scout", "weapon_jb_sg552", "weapon_jb_ump"}
 function PLAYER:Loadout()
     self.Player:Give("weapon_jb_fists")
-    if self.Player.GetNWString("guardweapon") then
-        self.Player:Give(self.Player.GetNWString("guardweapon"))
-        self.Player:GiveAmmo(self.Player.GetNWInt("guardammo"), self.Player.GetNWString("guardammotype"), true)
+    local guardWeapon = self.Player:GetNWString("guardweapon")
+    if guardWeapon ~= "" then
+        self.Player:Give(guardWeapon)
+        local ammoType = self.Player:GetNWString("guardammotype")
+        if ammoType ~= "" then
+            self.Player:GiveAmmo(self.Player:GetNWInt("guardammo"), ammoType, true)
+        end
     end
 
     --self.Player:Give(table.Random(randomGuardSidearms))
