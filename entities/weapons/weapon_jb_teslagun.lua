@@ -109,10 +109,6 @@ function SWEP:PrimaryAttack()
     if SERVER then
         local owner = self:GetOwner()
         owner:EmitSound(self.Primary.Sound, 100, math.random(95, 105))
-        if owner:GetNWString("powerup") == "gunpunt" and self:Clip1() <= self.Primary.ClipSize / 2 then
-            owner:SetVelocity(owner:GetAimVector() * -150)
-        end
-
         self:ZapEntities(owner)
     end
 
