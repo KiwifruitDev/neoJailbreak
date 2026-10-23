@@ -19,6 +19,19 @@ JB.Gamemode.PlayerInitialSpawn = function(_, ply)
     ply:SendLua(string.format("surface.PlaySound(%q)", "#otterjailbreak/waitingforplayers.wav"))
 end
 
+JB.Gamemode.PlayerSelectSpawn = function(gm, ply, transition)
+    if transition then return end
+
+    local spawnPoints = {}
+    for _, spawnClass in ipairs(team.GetSpawnPoint(ply:Team()) or {}) do
+        table.Add(spawnPoints, ents.FindByClass(spawnClass))
+    end
+
+    if #spawnPoints > 0 then return table.Random(spawnPoints) end
+
+    return gm.BaseClass.PlayerSelectSpawn(gm, ply, transition)
+end
+
 function JB.Gamemode:OnPhysgunReload(_, ply)
     local ps = ply:GetEyeTrace()
     if IsValid(ps.Entity) then
