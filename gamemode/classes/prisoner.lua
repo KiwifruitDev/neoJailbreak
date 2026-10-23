@@ -47,7 +47,23 @@ function PLAYER:SetupDataTables()
     --self.Player:NetworkVar("Bool", 1, "InGuardZone")
 end
 
-local prisonerModels = {Model("models/player/Group01/female_03.mdl"), Model("models/player/Group01/female_05.mdl"), Model("models/player/Group01/male_01.mdl"), Model("models/player/Group01/male_03.mdl"), Model("models/player/Group01/female_03.mdl"), Model("models/player/Group01/female_05.mdl"), Model("models/player/Group01/male_01.mdl"), Model("models/player/Group01/male_03.mdl"), Model("models/player/Group01/female_03.mdl"), Model("models/player/Group01/female_05.mdl"), Model("models/player/Group01/male_01.mdl"), Model("models/player/Group01/male_03.mdl"), Model("models/player/Group01/female_03.mdl"), Model("models/player/Group01/female_05.mdl"), Model("models/player/Group01/male_01.mdl"), Model("models/player/Group01/male_03.mdl"), Model("models/player/Group01/female_03.mdl"), Model("models/player/Group01/female_05.mdl"), Model("models/player/Group01/male_01.mdl"), Model("models/player/Group01/male_03.mdl"), Model("models/player/Group01/female_03.mdl"), Model("models/player/Group01/female_05.mdl"), Model("models/player/Group01/male_01.mdl"), Model("models/player/Group01/male_03.mdl"), Model("models/player/Group01/female_03.mdl"), Model("models/player/Group01/female_05.mdl"), Model("models/player/Group01/male_01.mdl"), Model("models/player/Group01/male_03.mdl"), Model("models/player/Group01/female_03.mdl"), Model("models/player/Group01/female_05.mdl"), Model("models/player/Group01/male_01.mdl"), Model("models/player/Group01/male_03.mdl"), Model("models/player/Group01/female_03.mdl"), Model("models/player/Group01/female_05.mdl"), Model("models/player/Group01/male_01.mdl"), Model("models/player/Group01/male_03.mdl"), Model("models/player/Group01/female_03.mdl"), Model("models/player/Group01/female_05.mdl"), Model("models/player/Group01/male_01.mdl"), Model("models/player/Group01/male_03.mdl"), Model("models/player/Group01/female_03.mdl"), Model("models/player/Group01/female_05.mdl"), Model("models/player/Group01/male_01.mdl"), Model("models/player/Group01/male_03.mdl"), Model("models/player/Group01/female_03.mdl"), Model("models/player/Group01/female_05.mdl"), Model("models/player/Group01/male_01.mdl"), Model("models/player/Group01/male_03.mdl"), Model("models/player/Group01/female_02.mdl"), Model("models/player/Group01/female_01.mdl"), Model("models/player/Group01/female_04.mdl"), Model("models/player/Group01/female_06.mdl"), Model("models/player/Group01/male_02.mdl"), Model("models/player/Group01/male_04.mdl"), Model("models/player/Group01/male_05.mdl"), Model("models/player/Group01/male_06.mdl"), Model("models/player/Group01/male_07.mdl"), Model("models/player/Group01/male_08.mdl"), Model("models/player/Group01/male_09.mdl")}
+local prisonerModels = {
+    Model("models/player/Group01/male_01.mdl"),
+    Model("models/player/Group01/male_02.mdl"),
+    Model("models/player/Group01/male_03.mdl"),
+    Model("models/player/Group01/male_04.mdl"),
+    Model("models/player/Group01/male_05.mdl"),
+    Model("models/player/Group01/male_06.mdl"),
+    Model("models/player/Group01/male_07.mdl"),
+    Model("models/player/Group01/male_08.mdl"),
+    Model("models/player/Group01/male_09.mdl"),
+    Model("models/player/Group01/female_01.mdl"),
+    Model("models/player/Group01/female_02.mdl"),
+    Model("models/player/Group01/female_03.mdl"),
+    Model("models/player/Group01/female_04.mdl"),
+    Model("models/player/Group01/female_05.mdl"),
+    Model("models/player/Group01/female_06.mdl")
+}
 function PLAYER:SetModel()
     if self.Player._prisonermodel then --after a rejoin or a map change/server restart, players need to re-equip the pointshop playermodel.
         self.Player:SetModel(self.Player._prisonermodel)
