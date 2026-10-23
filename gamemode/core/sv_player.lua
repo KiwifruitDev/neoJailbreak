@@ -115,7 +115,7 @@ JB.Gamemode.PlayerDeath = function(_unused_97_37, victim, weapon, killer)
         JB:BroadcastNotification(string.upper(killer:Nick()) .. " HAS ENDED THEIR OWN KILLSTREAK OF " .. victim:GetNWInt("killstreak") .. "!")
     end
 
-    if killerIsPlayer and killer ~= victim and killer:GetNWInt("killstreakkit") == 1 and killer:Alive() then --killstreaks
+    if killerIsPlayer and killer ~= victim and killer:Alive() then --killstreaks
         killer:SetNWInt("killstreak", killer:GetNWInt("killstreak") + 1)
     end
 

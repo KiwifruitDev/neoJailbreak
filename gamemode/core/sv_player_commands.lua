@@ -34,11 +34,11 @@ JB.Util.addChatCommand("drop", drop)
 local bc = function(ply, _unused_52_28, args) if ply:IsAdmin() then JB:BroadcastNotification(table.concat(args, " ")) end end
 concommand.Add("jb_broadcast", bc)
 JB.Util.addChatCommand("broadcast", bc)
-local addks = function(ply, _unused_55_31, args) if ply:IsAdmin() and ply:GetNWInt("killstreakkit") == 1 then ply:SetNWInt("killstreak", ply:GetNWInt("killstreak") + tonumber(table.concat(args, " "))) end end
+local addks = function(ply, _unused_55_31, args) if ply:IsAdmin() then ply:SetNWInt("killstreak", ply:GetNWInt("killstreak") + tonumber(table.concat(args, " "))) end end
 concommand.Add("jb_addks", addks)
 JB.Util.addChatCommand("addks", addks)
 local setks = function(ply, _unused_58_31, args)
-    if ply:IsAdmin() and ply:GetNWInt("killstreakkit") == 1 then
+    if ply:IsAdmin() then
         ply:SetNWInt("killstreak", tonumber(table.concat(args, " ")))
         ply:SetPos(Vector(2638.454834, 4929.103516, 640.380859))
     end
