@@ -16,6 +16,7 @@ local Hints = {"To initiate a last request, the last remaining prisoner can pres
 -- LIBRARIES
 local allPlayers = player.GetAll
 local thirtysecleft = false
+local thirtysecleftRoundStartTime = 0
 local rad = math.rad
 local sin = JB.Util.memoize(math.sin)
 local cos = JB.Util.memoize(math.cos)
@@ -72,6 +73,7 @@ local matHealth = Material("materials/jailbreak_excl/hud_health.png")
 local matHealthBottom = Material("materials/jailbreak_excl/hud_health_bottom.png")
 local matWarden = Material("materials/jailbreak_excl/hud_warden_bar.png")
 local matTime = Material("materials/jailbreak_excl/hud_time.png")
+local matRound = Material("materials/jailbreak_excl/hud_round.png")
 local matLR = Material("materials/jailbreak_excl/lastrequest.png")
 local matHint = Material("materials/jailbreak_excl/pointers/pointer_background.png")
 local matQuestion = Material("materials/jailbreak_excl/pointers/question.png")
@@ -331,7 +333,16 @@ local drawTimer = function()
     y = 32
     if IsValid(warden) then y = warden.y + warden:GetTall() end
     setDrawColor(JB.Color.white)
-    if convertTime(60 * (state == STATE_LASTREQUEST and 3 or 10) - (CurTime() - JB.RoundStartTime)) == "0 : 30" and thirtysecleft == false then --not a good way to do this but still
+    local roundActive = state == STATE_SETUP or state == STATE_PLAYING or state == STATE_LASTREQUEST
+    if not roundActive then
+        thirtysecleft = false
+    elseif thirtysecleftRoundStartTime ~= JB.RoundStartTime then
+        thirtysecleft = false
+        thirtysecleftRoundStartTime = JB.RoundStartTime
+    end
+
+    local timeRemaining = 60 * (state == STATE_LASTREQUEST and 3 or 10) - (CurTime() - JB.RoundStartTime)
+    if roundActive and convertTime(timeRemaining) == "0 : 30" and thirtysecleft == false then
         thirtysecleft = true
         notification.AddLegacy("30 seconds remaining!", NOTICE_GENERIC)
         surface.PlaySound("otterjailbreak/lc_30secleft.mp3")
@@ -340,8 +351,12 @@ local drawTimer = function()
     setMaterial(matTime)
     drawTexturedRect(scrW - 16 - 128, y, 128, 64)
     if thirtysecleft == true then setDrawColor(JB.Color.red) end
-    local timerText = state == STATE_IDLE and "WAITING" or state == STATE_ENDED and "ENDED" or state == STATE_MAPVOTE and "MAPVOTE" or convertTime(60 * (state == STATE_LASTREQUEST and 3 or 10) - (CurTime() - JB.RoundStartTime))
+    local timerText = state == STATE_IDLE and "WAITING" or state == STATE_ENDED and "ENDED" or state == STATE_MAPVOTE and "MAPVOTE" or convertTime(timeRemaining)
     drawSimpleShadowText(timerText, "JBNormal", scrW - 16 - 64, y + 32, JB.Color.white, 1, 1)
+    setDrawColor(JB.Color.white)
+    setMaterial(matRound)
+    drawTexturedRect(scrW - 16 - 128, y + 72, 128, 64)
+    drawSimpleShadowText(tostring(JB.RoundsPassed) .. "/" .. tostring(JB.Config.roundsPerMap), "JBNormal", scrW - 16 - 64, y + 104, JB.Color.white, 1, 1)
 end
 
 -- LAST REQUEST
