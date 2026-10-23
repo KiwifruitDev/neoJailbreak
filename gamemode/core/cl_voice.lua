@@ -112,7 +112,7 @@ function PANEL:FadeOut(anim, delta, _unused_119_40)
 end
 
 derma.DefineControl("VoiceNotify", "", PANEL, "DPanel")
-function GM:PlayerStartVoice(ply)
+function JB.Gamemode:PlayerStartVoice(ply)
     if not IsValid(g_VoicePanelList) then return end
     -- There'd be an exta one if voice_loopback is on, so remove it.
     GAMEMODE:PlayerEndVoice(ply)

@@ -25,7 +25,7 @@ function wmeta:IsSecondary()
     return table.HasValue(secoWeps, self:GetClass()) or table.HasValue(secoWeps, weapons.Get(self:GetClass()).Base)
 end
 
-function GM:CheckWeaponTable(class, model)
+function JB.Gamemode:CheckWeaponTable(class, model)
     if clientModels[class] then return end
     timer.Simple(0, function()
         clientModels[class] = ClientsideModel(model, RENDERGROUP_OPAQUE)

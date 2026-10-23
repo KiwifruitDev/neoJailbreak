@@ -121,7 +121,7 @@ JB.Gamemode.Name = "Jail Break"
 -- utility functions
 local loadFolder = function(folder, shared)
     local path = "jailbreak/gamemode/" .. folder .. "/"
-    for _, name in pairs(file.Find(path .. " * .lua", "LUA")) do
+    for _, name in pairs(file.Find(path .. "*.lua", "LUA")) do
         local runtype = shared or "sh"
         if not shared then runtype = string.Left(name, 2) end
         if not runtype or runtype ~= "sv" and runtype ~= "sh" and runtype ~= "cl" then return false end

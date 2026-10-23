@@ -61,10 +61,10 @@ function JB:AlivePrisoners()
 end
 
 --Useless gooks
-function GM:PlayerJoinTeam()
+function JB.Gamemode:PlayerJoinTeam()
     return false
 end
 
-function GM:PlayerRequestTeam()
+function JB.Gamemode:PlayerRequestTeam()
     return false
 end
