@@ -11,4 +11,6 @@
     See LICENSE for copyright attribution and licensing information.
 ]]--
 
-JB.Gamemode.PlayerNoClip = function(_unused_32_38, p) return p:IsSuperAdmin() end
+JB.Gamemode.PlayerNoClip = function(_, p)
+    return p:IsSuperAdmin()
+end

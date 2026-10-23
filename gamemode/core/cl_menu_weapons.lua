@@ -11,7 +11,6 @@
     See LICENSE for copyright attribution and licensing information.
 ]]--
 
-local _unused_32_7 = Color(230, 230, 230, 200)
 local frame
 local randomHealed = {"All patched up and ready to go!", "Thank you for doing business with me!", "You're all set, don't tell anyone you saw me.", "You're healed up. This never happened, head out now!", "Body armor is in place and you're healed up. You're free to go!"}
 function JB.MENU_GUNMENU()

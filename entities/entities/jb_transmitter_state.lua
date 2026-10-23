@@ -58,6 +58,6 @@ function ENT:KeyValue(key, value)
     if self:SetNetworkKeyValue(key, value) then return end
 end
 
-function ENT:CanEditVariables(_unused_79_32)
+function ENT:CanEditVariables()
     return false
 end

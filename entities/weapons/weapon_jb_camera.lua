@@ -24,7 +24,7 @@ if SERVER then
     --
     -- A concommand to quickly switch to the camera
     --
-    concommand.Add("gmod_camera", function(player, _unused_27_56, _unused_27_66) player:SelectWeapon("gmod_camera") end)
+    concommand.Add("gmod_camera", function(ply) ply:SelectWeapon("gmod_camera") end)
 end
 
 --
@@ -91,7 +91,7 @@ end
 --
 -- Override players Field Of View
 --
-function SWEP:TranslateFOV(_unused_94_29)
+function SWEP:TranslateFOV()
     return self:GetZoom()
 end
 
@@ -147,7 +147,7 @@ SWEP.WepSelectIcon = surface.GetTextureID("vgui/gmod_camera")
 function SWEP:DrawHUD()
 end
 
-function SWEP:PrintWeaponInfo(_unused_150_32, _unused_150_36, _unused_150_40)
+function SWEP:PrintWeaponInfo()
 end
 
 function SWEP:HUDShouldDraw(name)
@@ -163,7 +163,7 @@ function SWEP:FreezeMovement()
     return false
 end
 
-function SWEP:CalcView(_unused_166_25, origin, angles, fov)
+function SWEP:CalcView(_, origin, angles, fov)
     if self:GetRoll() ~= 0 then angles.Roll = self:GetRoll() end
     return origin, angles, fov
 end

@@ -65,7 +65,7 @@ function JB.MENU_SCRIPTDAYS()
             btn_accept:SetVisible(false)
             --populate left panel
             left:DockMargin(0, 0, 0, 0)
-            local function selectScriptday(name, description, func, _unused_87_73)
+            local function selectScriptday(name, description, func)
                 btn_accept:SetVisible(true)
                 lr_selected = func
                 lbl_ScriptdayName:SetText(name)

@@ -54,7 +54,7 @@ function JB.MENU_LR()
         btn_accept:SetText("Start Last Request")
         btn_accept.OnMouseReleased = function()
             local Menu = DermaMenu()
-            for _unused_75_17, v in pairs(team.GetPlayers(TEAM_GUARD)) do
+            for _, v in pairs(team.GetPlayers(TEAM_GUARD)) do
                 if not IsValid(v) then continue end
                 local btn = Menu:AddOption(v:Nick() or "Unknown guard", function()
                     RunConsoleCommand("jb_lastrequest_start", lr_selected:GetID(), v:EntIndex())
@@ -67,7 +67,7 @@ function JB.MENU_LR()
             Menu:AddSpacer()
             Menu:AddOption("Random guard", function()
                 local tab = {}
-                for _unused_88_21, v in ipairs(team.GetPlayers(TEAM_GUARD)) do
+                for _, v in ipairs(team.GetPlayers(TEAM_GUARD)) do
                     if v:Alive() then table.insert(tab, v) end
                 end
 
@@ -93,7 +93,7 @@ function JB.MENU_LR()
         end
 
         left:DockMargin(0, 0, 0, 0)
-        for _unused_114_13, v in pairs(JB.LastRequestTypes) do
+        for _, v in pairs(JB.LastRequestTypes) do
             local pnl = vgui.Create("JB.Panel", left)
             pnl:SetTall(26)
             pnl:Dock(TOP)

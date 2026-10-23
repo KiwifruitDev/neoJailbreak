@@ -71,7 +71,7 @@ function JB:DamageLog_AddEntityTakeDamage(p, dmg)
     end
 end
 
-function JB:DamageLog_AddPlayerDeath(p, _unused_92_43, killer)
+function JB:DamageLog_AddPlayerDeath(p, _, killer)
     if not JB.ThisRound.Logs then JB.ThisRound.Logs = {} end
     local message = {}
     local subject = p
@@ -145,7 +145,7 @@ function JB:DamageLog_AddPlayerDrop(p, class)
 end
 
 util.AddNetworkString("JB.GetLogs")
-local getLogs = function(p, cmd, _unused_166_37)
+local getLogs = function(p, cmd)
     if p.nextLogs and p.nextLogs > CurTime() then return end
     if p:Alive() and not p:IsAdmin() then
         p:PrintMessage(HUD_PRINTCONSOLE, "You can't receive logs while you're alive.")
@@ -156,15 +156,15 @@ local getLogs = function(p, cmd, _unused_166_37)
     p.nextLogs = CurTime() + 1
     local logs = {}
     if cmd == "jb_logs_get_damage" then
-        for _unused_177_13, v in ipairs(JB.ThisRound.Logs or {}) do
+        for _, v in ipairs(JB.ThisRound.Logs or {}) do
             if v.kind == "DAMAGE" then table.insert(logs, v) end
         end
     elseif cmd == "jb_logs_get_kills" then
-        for _unused_181_13, v in ipairs(JB.ThisRound.Logs or {}) do
+        for _, v in ipairs(JB.ThisRound.Logs or {}) do
             if v.kind == "KILL" then table.insert(logs, v) end
         end
     elseif cmd == "jb_logs_get_damagekills" then
-        for _unused_185_13, v in ipairs(JB.ThisRound.Logs or {}) do
+        for _, v in ipairs(JB.ThisRound.Logs or {}) do
             if v.kind == "KILL" or v.kind == "DAMAGE" then table.insert(logs, v) end
         end
     else

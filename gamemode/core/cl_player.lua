@@ -13,7 +13,7 @@
 
 local cvarAlwaysSpectator = CreateClientConVar("jb_cl_option_always_spectate", "0", true, false)
 hook.Add("Initialize", "JB.AutomateSpectatorSpawn", function() if cvarAlwaysSpectator:GetBool() then RunConsoleCommand("jb_team_select_spectator") end end)
-function JB.Gamemode:KeyPress(ply, _unused_34_38)
+function JB.Gamemode:KeyPress(ply)
     if not IsFirstTimePredicted() then return end
     if not IsValid(ply) or ply ~= LocalPlayer() then return end
 end
@@ -56,7 +56,7 @@ end
 
 hook.Add("PreDrawHalos", "JB.PreDrawHalos.AddHalos", function()
     if JB.LastRequest ~= "0" and JB.LastRequestPlayers then
-        for _unused_77_13, v in pairs(JB.LastRequestPlayers) do
+        for _, v in pairs(JB.LastRequestPlayers) do
             if not IsValid(v) or LocalPlayer() == v then continue end
             halo.Add({v}, team.GetColor(v:Team()), 1, 1, 2, true, true)
         end

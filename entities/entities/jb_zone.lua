@@ -44,7 +44,7 @@ if SERVER then
     function ENT:EndTouch(ply)
         if IsValid(ply) and ply:IsPlayer() and ply._guardZones and ply.GetInGuardZone then
             ply._guardZones[self:EntIndex()] = false
-            for _unused_47_17, v in pairs(ply._guardZones) do
+            for _, v in pairs(ply._guardZones) do
                 if v then return end
             end
 

@@ -26,8 +26,6 @@ surface.CreateFont("JBWindowTitleShadow", {
 })
 
 local matGradient = Material("materials/jailbreak_excl/gradient.png")
-local _unused_105_7 = Material("materials/jailbreak_excl/vgui_close.png")
-local _unused_106_7 = Material("materials/jailbreak_excl/vgui_close_hover.png")
 local color_white_shadow = Color(255, 255, 255, 1)
 local color_gradient_top = Color(0, 0, 0, 20)
 local color_gradient_bottom = Color(0, 0, 0, 120)
@@ -81,7 +79,6 @@ function PNL:Paint(w, h)
     surface.SetMaterial(matGradient)
     local h_grad = math.Clamp(h - 30 - 8, 0, 256)
     surface.DrawTexturedRectRotated(w / 2, 31 + h_grad / 2, w - 6, h_grad, 0)
-    local _unused_160_11, _unused_160_20 = JB.Util.drawSimpleShadowText(string.upper(self:GetTitle()), "JBWindowTitle", 12, 32 / 2 + 1, JB.Color["#EEE"], 0, 1, 4)
 end
 
 vgui.Register("JB.Frame", PNL, "EditablePanel")

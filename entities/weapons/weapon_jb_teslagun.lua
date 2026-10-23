@@ -67,6 +67,32 @@ function SWEP:BoxTrace()
     return Trace
 end
 
+function SWEP:ZapEntities(owner)
+    local damageInfo = DamageInfo()
+    damageInfo:SetDamage(1000)
+    damageInfo:SetDamageType(DMG_SHOCK)
+    damageInfo:SetAttacker(owner)
+    damageInfo:SetInflictor(owner:GetActiveWeapon())
+    damageInfo:SetDamageForce(Vector(0, 0, 1000))
+
+    local trace = self:BoxTrace()
+    if not IsValid(trace.Entity) then return end
+
+    trace.Entity:TakeDamageInfo(damageInfo)
+
+    local excludedEntities = {[trace.Entity] = true}
+    local sourceEntity = trace.Entity
+    for _ = 1, 9 do
+        local nextEntity = self:FindNearestEntity(sourceEntity:GetPos(), 150, excludedEntities)
+        if not IsValid(nextEntity) then break end
+
+        util.ParticleTracerEx(self.ArcEffect, sourceEntity:GetPos(), nextEntity:GetPos(), true, 1, 1)
+        nextEntity:TakeDamageInfo(damageInfo)
+        excludedEntities[nextEntity] = true
+        sourceEntity = nextEntity
+    end
+end
+
 function SWEP:PrimaryAttack()
     if self:GetNWMode() == MODE_SPRINT then return end
     local delay = self.Primary.Burst > 0 and self.Primary.Delay * (self.Primary.Burst + 1) or self.Primary.Delay
@@ -81,42 +107,20 @@ function SWEP:PrimaryAttack()
     self:Shoot()
     self.LastShoot = CurTime()
     if SERVER then
-        self:GetOwner():EmitSound(self.Primary.Sound, 100, math.random(95, 105))
-        if self:GetOwner():GetNWString("powerup") == "gunpunt" and self:Clip1() <= self.Primary.ClipSize / 2 then --punting should only be allowed once your clip size is appropriate
-            self:GetOwner():SetVelocity(self:GetOwner():GetAimVector() * -150)
+        local owner = self:GetOwner()
+        owner:EmitSound(self.Primary.Sound, 100, math.random(95, 105))
+        if owner:GetNWString("powerup") == "gunpunt" and self:Clip1() <= self.Primary.ClipSize / 2 then
+            owner:SetVelocity(owner:GetAimVector() * -150)
         end
 
-        local dmginfo = DamageInfo()
-        local eyetrace = self:BoxTrace()
-        local maxzaprange = 150
-        dmginfo:SetDamage(1000)
-        dmginfo:SetDamageType(DMG_SHOCK)
-        dmginfo:SetAttacker(self:GetOwner())
-        dmginfo:SetInflictor(self:GetOwner():GetActiveWeapon())
-        dmginfo:SetDamageForce(Vector(0, 0, 1000))
-        if IsValid(eyetrace.Entity) then
-            eyetrace.Entity:TakeDamageInfo(dmginfo)
-            local previousEntities = {
-                [eyetrace.Entity] = true
-           }
-
-            local sourceEntity = eyetrace.Entity
-            for _ = 1, 9 do
-                local nextEntity = self:FindNearestEntity(sourceEntity:GetPos(), maxzaprange, previousEntities)
-                if not IsValid(nextEntity) then break end
-                util.ParticleTracerEx(self.ArcEffect, sourceEntity:GetPos(), nextEntity:GetPos(), true, 1, 1)
-                nextEntity:TakeDamageInfo(dmginfo)
-                previousEntities[nextEntity] = true
-                sourceEntity = nextEntity
-            end
-        end
+        self:ZapEntities(owner)
     end
 
     self:TakePrimaryAmmo(1)
     if self:Clip1() <= 0 and tobool(self:GetOwner():GetInfoNum("jb_cl_option_autoreload", "1")) then self:Reload() end
 end
 
-function SWEP:ShootEffect(EFFECTSTR, _unused_136_40, endpos)
+function SWEP:ShootEffect(EFFECTSTR, _, endpos)
     local pPlayer = self:GetOwner()
     if not pPlayer then return end
     local view
@@ -133,7 +137,7 @@ function SWEP:ShootEffect(EFFECTSTR, _unused_136_40, endpos)
     end
 end
 
-function SWEP:Shoot(_unused_153_22, effect)
+function SWEP:Shoot(_, effect)
     local pPlayer = self:GetOwner()
     if not pPlayer then return end
     local traceres = util.QuickTrace(self:GetOwner():EyePos(), self:GetOwner():GetAimVector() * self.Range, self:GetOwner())

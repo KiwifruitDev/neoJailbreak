@@ -51,7 +51,7 @@ vgui.Register("JBScoreboard.PlayerRow", {
     end,
     PerformLayout = function(self)
         if not IsValid(self.Player) then return end
-        local _unused_58_15, h = self:GetWide(), self:GetTall()
+        local h = self:GetTall()
         self.Avatar:SetPos(h / 2 - self.Avatar:GetTall() / 2, h / 2 - self.Avatar:GetTall() / 2)
     end,
     Setup = function(self, pl)
@@ -117,7 +117,7 @@ vgui.Register("JBScoreboard.PlayerRow", {
             JB:DebugPrint("Failed to open admin menu. Not an admin.")
         end
     end,
-    PaintOver = function(self, _unused_115_34, h)
+    PaintOver = function(self, _, h)
         if not IsValid(self.Player) then return end
         local playerTeam = getScoreTeam(self.Player)
         local col = team.GetColor(playerTeam)
@@ -296,7 +296,7 @@ vgui.Register("JBScoreboard", {
             local x = this:GetWide() / 2 - (perRow * 64) / 2
             local y = 8
             local isFirst = true
-            for _unused_279_17, v in ipairs(this:GetChildren()) do
+            for _, v in ipairs(this:GetChildren()) do
                 if not IsValid(v) then continue end
                 x = x + 64
                 if x > perRow * 64 then
@@ -338,17 +338,17 @@ vgui.Register("JBScoreboard", {
         self.ScoresSpectators:SetSize(self.Footer:GetWide(), math.ceil(#self.ScoresSpectators:GetChildren() / (self.ScoresSpectators:GetWide() / 64)) * 64 + 8 * 2)
         self.Header:SetHeight(self.Name:GetTall() + 20)
         local max = 0
-        for _unused_321_13, v in pairs(self.Footer:GetChildren()) do
+        for _, v in pairs(self.Footer:GetChildren()) do
             if v.y + v:GetTall() > max then max = v.y + v:GetTall() end
         end
 
         self.Footer:SetHeight(max)
     end,
-    Paint = function(_unused_327_23, _unused_327_30, _unused_327_34)
+    Paint = function()
         --DrawToyTown(2,ScrH())
     end,
     Think = function(self)
-        local _unused_331_15, h = self:GetWide(), self:GetTall()
+        local _, h = self:GetWide(), self:GetTall()
         if not self.Expand then
             if math.floor(self.y) > -h then
                 color_text.a = Lerp(FrameTime() * 12, color_text.a, 0)
@@ -398,7 +398,7 @@ vgui.Register("JBScoreboard", {
         end
 
         local allPlayers = player.GetAll()
-        for _unused_380_13, pl in pairs(allPlayers) do
+        for _, pl in pairs(allPlayers) do
             if IsValid(pl.ScoreEntry) then
                 if getScoreTeam(pl) ~= pl.ScoreEntry.Team or not IsValid(pl.ScoreEntry.scoreboard) or pl.ScoreEntry.scoreboard ~= self then
                     JB:DebugPrint("Removed invalid score panel")

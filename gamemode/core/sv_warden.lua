@@ -37,13 +37,13 @@ function JB:ClaimWarden(p, automatic)
     return true
 end
 
-local function claimWarden(p, _unused_32_33, _unused_32_37)
+local function claimWarden(p)
     JB:ClaimWarden(p)
 end
 
 JB.Util.addChatCommand("warden", claimWarden)
 concommand.Add("jb_claim_warden", claimWarden)
-concommand.Add("jb_warden_changecontrol", function(p, _unused_59_59, a)
+concommand.Add("jb_warden_changecontrol", function(p, _, a)
     if not IsValid(p) or not p.GetWarden or not p:GetWarden() or not IsValid(JB.TRANSMITTER) then return end
     local opt = a[1]
     local val = a[2]
@@ -62,7 +62,7 @@ end)
 
 local function spawnProp(p, typ, model)
     local spawned = 0
-    for _unused_78_9, v in pairs(ents.GetAll()) do
+    for _, v in pairs(ents.GetAll()) do
         if v and IsValid(v) and v.wardenSpawned then spawned = spawned + 1 end
     end
 
@@ -96,7 +96,7 @@ local function adminSpawn(p, typ, model)
     prop:Activate()
 end
 
-concommand.Add("jb_admin_spawn", function(p, _unused_106_50, a)
+concommand.Add("jb_admin_spawn", function(p, _, a)
     if not IsValid(p) or not p:IsAdmin() then return end
     local opt = a[1]
     if not opt then
@@ -114,23 +114,23 @@ concommand.Add("jb_admin_spawn", function(p, _unused_106_50, a)
     end
 end)
 
-concommand.Add("jb_warden_opendoors", function(p, _unused_125_55, _unused_125_59)
+concommand.Add("jb_warden_opendoors", function(p)
     if not IsValid(p) or not p.GetWarden or not p:GetWarden() or not tobool(JB.Config.wardenControl) then return end
     JB:BroadcastNotification("All cells and doors have been toggled!")
-    for _unused_128_9, v in ipairs(ents.FindByClass("func_door")) do
+    for _, v in ipairs(ents.FindByClass("func_door")) do
         v:Fire("Toggle", 1)
     end
 
-    for _unused_132_9, v in ipairs(ents.FindByClass("func_door_rotating")) do
+    for _, v in ipairs(ents.FindByClass("func_door_rotating")) do
         v:Fire("Toggle", 1)
     end
 
-    for _unused_136_9, v in ipairs(ents.FindByClass("func_movelinear")) do
+    for _, v in ipairs(ents.FindByClass("func_movelinear")) do
         v:Fire("Toggle", 1)
     end
 end)
 
-concommand.Add("jb_warden_spawn", function(p, _unused_158_51, a)
+concommand.Add("jb_warden_spawn", function(p, _, a)
     if not IsValid(p) or not p.GetWarden or not p:GetWarden() or not tobool(JB.Config.wardenControl) then return end
     local opt = a[1]
     if not opt then
@@ -146,20 +146,20 @@ concommand.Add("jb_warden_spawn", function(p, _unused_158_51, a)
     end
 end)
 
-concommand.Add("jb_warden_scriptday", function(p, _unused_174_55, a)
+concommand.Add("jb_warden_scriptday", function(p, _, a)
     if not IsValid(p) or not p.GetWarden or not p:GetWarden() or not tobool(JB.Config.wardenControl) then return end
     if IsValid(JB.TRANSMITTER) and JB.TRANSMITTER:GetJBScriptday() == "" then
         local lr = a[1]
         JB.TRANSMITTER:SetJBScriptday(lr)
-        for _unused_179_13, v in ipairs(ents.FindByClass("func_door")) do
+        for _, v in ipairs(ents.FindByClass("func_door")) do
             v:Fire("Open", 1)
         end
 
-        for _unused_183_13, v in ipairs(ents.FindByClass("func_door_rotating")) do
+        for _, v in ipairs(ents.FindByClass("func_door_rotating")) do
             v:Fire("Open", 1)
         end
 
-        for _unused_187_13, v in ipairs(ents.FindByClass("func_movelinear")) do
+        for _, v in ipairs(ents.FindByClass("func_movelinear")) do
             v:Fire("Open", 1)
         end
 
@@ -194,7 +194,7 @@ function JB:WardenPlacePointer(p, typ, pos)
     return true
 end
 
-concommand.Add("jb_warden_placepointer", function(p, _unused_228_58, a)
+concommand.Add("jb_warden_placepointer", function(p, _, a)
     if not IsValid(p) or not p.GetWarden or not p:GetWarden() then return end
     local typ = tostring(a[1])
     if not typ then return end

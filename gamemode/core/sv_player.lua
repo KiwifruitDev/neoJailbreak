@@ -12,14 +12,14 @@
 ]]--
 
 local randomGhostSFX = {"otterjailbreak/lc_ghost01.mp3", "otterjailbreak/lc_ghost02.mp3", "otterjailbreak/lc_ghost03.mp3", "otterjailbreak/lc_ghost04.mp3"}
-JB.Gamemode.PlayerInitialSpawn = function(_unused_33_44, ply)
+JB.Gamemode.PlayerInitialSpawn = function(_, ply)
     ply:SetTeam(TEAM_PRISONER) -- always spawn as prisoner
     JB:DebugPrint(ply:Nick() .. " has successfully joined the server.")
     --ply:ConCommand("snd_restart") --if they join the server with the content addon, their sound may not work properly
     ply:SendLua(string.format("surface.PlaySound(%q)", "otterjailbreak/waitingforplayers.wav"))
 end
 
-function JB.Gamemode:OnPhysgunReload(_unused_40_39, ply)
+function JB.Gamemode:OnPhysgunReload(_, ply)
     local ps = ply:GetEyeTrace()
     if IsValid(ps.Entity) then
         ply:ChatPrint(ps.Entity:GetClass() .. " (" .. ps.Entity:MapCreationID() .. ") position: " .. tostring(ps.Entity:GetPos()))
@@ -46,7 +46,7 @@ JB.Gamemode.PlayerSpawn = function(gm, ply)
     ply.originalRunSpeed = ply:GetRunSpeed()
 end
 
-JB.Gamemode.PlayerDeathThink = function(_unused_67_42, ply)
+JB.Gamemode.PlayerDeathThink = function(_, ply)
     if (ply:KeyPressed(IN_ATTACK) or ply:KeyPressed(IN_ATTACK2) or ply:KeyPressed(IN_JUMP)) and ply:GetObserverMode() == OBS_MODE_NONE then
         if JB.State == STATE_IDLE then
             ply:Spawn()
@@ -56,7 +56,7 @@ JB.Gamemode.PlayerDeathThink = function(_unused_67_42, ply)
     end
 end
 
-JB.Gamemode.PlayerCanPickupWeapon = function(_unused_77_47, ply, entity)
+JB.Gamemode.PlayerCanPickupWeapon = function(_, ply, entity)
     if not ply:Alive() then return false end
     if entity:GetClass() == "weapon_physgun" or entity:GetClass() == "weapon_jb_deletionknife" then return ply:IsSuperAdmin() end
     if not ply:CanPickupWeapon(entity) then return false end
@@ -68,7 +68,7 @@ JB.Gamemode.PlayerCanPickupWeapon = function(_unused_77_47, ply, entity)
     return true
 end
 
-JB.Gamemode.PlayerShouldTakeDamage = function(_unused_89_48, a, b)
+JB.Gamemode.PlayerShouldTakeDamage = function(_, a, b)
     if IsValid(a) and IsValid(b) then
         local aIsCombatant = a:IsPlayer()
         local bIsCombatant = b:IsPlayer()
@@ -82,7 +82,7 @@ JB.Gamemode.PlayerShouldTakeDamage = function(_unused_89_48, a, b)
 end
 
 JB.Gamemode.IsSpawnpointSuitable = function() return true end
-JB.Gamemode.PlayerDeath = function(_unused_97_37, victim, weapon, killer)
+JB.Gamemode.PlayerDeath = function(_, victim, weapon, killer)
     local killerIsPlayer = IsValid(killer) and killer:IsPlayer()
     victim:StripWeapons()
     if victim == killer and victim:GetNWInt("killstreak") >= 4 then
@@ -177,7 +177,7 @@ JB.Gamemode.PlayerDeath = function(_unused_97_37, victim, weapon, killer)
     if victim.GetWarden and IsValid(JB.TRANSMITTER) and victim:GetWarden() then
         JB:BroadcastNotification("The warden has died")
         timer.Simple(.5, function()
-            for _unused_192_17, v in pairs(team.GetPlayers(TEAM_GUARD)) do
+            for _, v in pairs(team.GetPlayers(TEAM_GUARD)) do
                 if v:Alive() and v ~= victim then
                     JB:BroadcastNotification("Prisoners get freeday")
                     break
@@ -209,14 +209,14 @@ JB.Gamemode.PlayerDeath = function(_unused_97_37, victim, weapon, killer)
     end
 
     if JB.State == STATE_LASTREQUEST then
-        local guard, _unused_224_23 = unpack(JB.LastRequestPlayers)
+        local guard = unpack(JB.LastRequestPlayers)
         if IsValid(guard) and guard == victim then JB.LastRequest = "0" end
     end
 
     JB:DamageLog_AddPlayerDeath(victim, weapon, killer)
 end
 
-JB.Gamemode.ScalePlayerDamage = function(_unused_231_43, _unused_231_48, hitgroup, dmginfo)
+JB.Gamemode.ScalePlayerDamage = function(_, _, hitgroup, dmginfo)
     if hitgroup == HITGROUP_HEAD then
         dmginfo:ScaleDamage(3)
     elseif hitgroup == HITGROUP_LEFTARM or hitgroup == HITGROUP_RIGHTARM then
@@ -228,7 +228,7 @@ end
 
 JB.Gamemode.GetFallDamage = function() return 0 end
 local fallsounds = {Sound("player/damage1.wav"), Sound("player/damage2.wav"), Sound("player/damage3.wav")}
-JB.Gamemode.OnPlayerHitGround = function(_unused_243_43, ply, in_water, on_floater, speed)
+JB.Gamemode.OnPlayerHitGround = function(_, ply, in_water, on_floater, speed)
     if in_water or speed < 460 or not IsValid(ply) then return end
     local damage = math.pow(0.05 * (speed - 420), 1.30)
     if on_floater then damage = damage / 2 end
@@ -244,16 +244,16 @@ JB.Gamemode.OnPlayerHitGround = function(_unused_243_43, ply, in_water, on_float
     end
 end
 
-JB.Gamemode.PlayerCanHearPlayersVoice = function(_unused_259_51, _unused_259_56, talker)
+JB.Gamemode.PlayerCanHearPlayersVoice = function(_, _, talker)
     if not talker:Alive() or talker:Team() == TEAM_PRISONER and CurTime() - JB.RoundStartTime < 30 then return false, false end
     if talker.GetWarden and talker:GetWarden() then return true, false end
     return true, false
 end
 
-JB.Gamemode.EntityTakeDamage = function(_unused_265_42, ent, dmg) JB:DamageLog_AddEntityTakeDamage(ent, dmg) end
+JB.Gamemode.EntityTakeDamage = function(_, ent, dmg) JB:DamageLog_AddEntityTakeDamage(ent, dmg) end
 hook.Add("PlayerDisconnected", "JB.PlayerDisconnected.CheckDisconnect", function(p)
     if JB.State == STATE_LASTREQUEST then
-        local guard, _unused_268_23 = unpack(JB.LastRequestPlayers)
+        local guard = unpack(JB.LastRequestPlayers)
         if IsValid(guard) and guard == p then JB.LastRequest = "0" end
     end
 end)
@@ -329,11 +329,11 @@ function JB:BroadcastQuickNotification(text)
     net.Broadcast()
 end
 
-function JB.Gamemode:AllowPlayerPickup(ply, _unused_331_47)
+function JB.Gamemode:AllowPlayerPickup(ply)
     return ply:Alive() and (JB.State == STATE_PLAYING or JB.State == STATE_SETUP or JB.State == STATE_LASTREQUEST) and IsValid(JB.TRANSMITTER) and JB.TRANSMITTER:GetJBWarden_ItemPickup()
 end
 
-function JB.Gamemode:PlayerUse(ply, _unused_335_39)
+function JB.Gamemode:PlayerUse(ply)
     if not ply:Alive() or not (ply:Team() == TEAM_GUARD or ply:Team() == TEAM_PRISONER) then return false end
     return true
 end

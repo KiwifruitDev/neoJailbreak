@@ -49,7 +49,7 @@ concommand.Add("jb_admin_configmode", function(ply)
 end)
 
 local waitSave = false
-function JB.Gamemode:OnPhysgunFreeze(_unused_72_39, _unused_72_48, ent, ply)
+function JB.Gamemode:OnPhysgunFreeze(_, _, ent, ply)
     if not ply:IsSuperAdmin() or waitSave then return false end
     if not IsValid(ent) or ent:GetClass() ~= "jb_zone_handle" then return false end
     ent.isPositioned = true
@@ -61,7 +61,7 @@ function JB.Gamemode:OnPhysgunFreeze(_unused_72_39, _unused_72_48, ent, ply)
     return true
 end
 
-function JB.Gamemode:OnPhysgunReload(_unused_84_39, ply)
+function JB.Gamemode:OnPhysgunReload(_, ply)
     if not ply:IsSuperAdmin() then return false end
     local ent = ents.Create("jb_zone")
     ent:Spawn()

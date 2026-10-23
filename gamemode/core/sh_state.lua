@@ -37,7 +37,7 @@
 
 -- Compatability hooks - implement these in your admin mods
 
-function JB.Gamemode.JailBreakStartMapvote(_unused_61_45, _unused_61_61) -- hook.Add("JailBreakStartMapvote",...) to implement your own mapvote. NOTE: Remember to return true!
+function JB.Gamemode.JailBreakStartMapvote() -- hook.Add("JailBreakStartMapvote",...) to implement your own mapvote. NOTE: Remember to return true!
     return false -- return true in your own mapvote function, else there won't be a pause between rounds!
 end
 
@@ -105,57 +105,57 @@ end
 if SERVER then
     JB.SpecialDays = {
         ["Guns for everyone"] = function()
-            for _unused_152_17, v in ipairs(team.GetPlayers(TEAM_PRISONER)) do
+            for _, v in ipairs(team.GetPlayers(TEAM_PRISONER)) do
                 v:Give("weapon_jb_deagle")
                 v:SelectWeapon("weapon_jb_deagle")
             end
 
-            for _unused_157_17, v in ipairs(ents.FindByClass("func_door")) do
+            for _, v in ipairs(ents.FindByClass("func_door")) do
                 v:Fire("Open", 1)
             end
 
-            for _unused_161_17, v in ipairs(ents.FindByClass("func_door_rotating")) do
+            for _, v in ipairs(ents.FindByClass("func_door_rotating")) do
                 v:Fire("Open", 1)
             end
 
-            for _unused_165_17, v in ipairs(ents.FindByClass("func_movelinear")) do
+            for _, v in ipairs(ents.FindByClass("func_movelinear")) do
                 v:Fire("Open", 1)
             end
         end,
         ["Super heros"] = function()
-            for _unused_170_17, v in ipairs(team.GetPlayers(TEAM_PRISONER)) do
+            for _, v in ipairs(team.GetPlayers(TEAM_PRISONER)) do
                 v:SetRunSpeed(600)
                 v:SetWalkSpeed(270)
                 v:SetJumpPower(400)
             end
 
-            for _unused_176_17, v in ipairs(ents.FindByClass("func_door")) do
+            for _, v in ipairs(ents.FindByClass("func_door")) do
                 v:Fire("Open", 1)
             end
 
-            for _unused_180_17, v in ipairs(ents.FindByClass("func_door_rotating")) do
+            for _, v in ipairs(ents.FindByClass("func_door_rotating")) do
                 v:Fire("Open", 1)
             end
 
-            for _unused_184_17, v in ipairs(ents.FindByClass("func_movelinear")) do
+            for _, v in ipairs(ents.FindByClass("func_movelinear")) do
                 v:Fire("Open", 1)
             end
         end,
         ["Slow guards"] = function()
-            for _unused_189_17, v in ipairs(team.GetPlayers(TEAM_GUARD)) do
+            for _, v in ipairs(team.GetPlayers(TEAM_GUARD)) do
                 v:SetRunSpeed(100)
                 v:SetWalkSpeed(100)
             end
 
-            for _unused_194_17, v in ipairs(ents.FindByClass("func_door")) do
+            for _, v in ipairs(ents.FindByClass("func_door")) do
                 v:Fire("Open", 1)
             end
 
-            for _unused_198_17, v in ipairs(ents.FindByClass("func_door_rotating")) do
+            for _, v in ipairs(ents.FindByClass("func_door_rotating")) do
                 v:Fire("Open", 1)
             end
 
-            for _unused_202_17, v in ipairs(ents.FindByClass("func_movelinear")) do
+            for _, v in ipairs(ents.FindByClass("func_movelinear")) do
                 v:Fire("Open", 1)
             end
         end
@@ -192,20 +192,15 @@ function JB:NewRound(rounds_passed)
         end)
 
         if JB.RoundsPassed == 1 then
-            local count = table.Count(JB.SpecialDays)
-            local which = math.random(1, count)
-            count = 0
-            for k, _unused_247_21 in pairs(JB.SpecialDays) do
-                count = count + 1
-                if count == which then
-                    which = k
-                    break
-                end
+            local specialDayNames = {}
+            for name in pairs(JB.SpecialDays) do
+                specialDayNames[#specialDayNames + 1] = name
             end
 
-            if JB.SpecialDays[which] then
-                JB:BroadcastNotification("First round: " .. which)
-                JB.SpecialDays[which]()
+            if #specialDayNames > 0 then
+                local specialDayName = table.Random(specialDayNames)
+                JB:BroadcastNotification("First round: " .. specialDayName)
+                JB.SpecialDays[specialDayName]()
                 JB.ThisRound.IsSpecialRound = true
             end
         end

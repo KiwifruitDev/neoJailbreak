@@ -88,7 +88,7 @@ hook.Add("Think", "JB.Think.ContextMenuLogic", function()
     if color.a < 250 then return end
     steps = 2 * math.pi / #bubbles
     xRel, yRel = -ScrW() / 2 + gui.MouseX() + size / 2, -ScrH() / 2 + gui.MouseY() + size / 2
-    for _unused_109_9, v in pairs(bubbles) do
+    for _, v in pairs(bubbles) do
         x, y = (size + 64) / 2 + math.sin(v.ang) * size / 2, (size + 64) / 2 + math.cos(v.ang) * size / 2
         if xRel > x - 64 and xRel < x and yRel > y - 64 and yRel < y then
             v.selected = true
@@ -127,7 +127,7 @@ local function closeContext()
     if not contextEnabled then return end
     gui.EnableScreenClicker(false)
     contextEnabled = false
-    for _unused_148_9, v in pairs(bubbles) do
+    for _, v in pairs(bubbles) do
         if v.selected then
             v.action()
             JB:DebugPrint("Selected option '" .. v.text .. "' in context menu.")

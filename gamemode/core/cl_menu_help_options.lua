@@ -12,7 +12,6 @@
 ]]--
 
 local color_text = Color(223, 223, 223, 230)
-local _unused_33_7 = Material("materials/jailbreak_excl/gradient.png")
 local frame
 local slide_cur = 1
 local guide_slides = {Material("jailbreak_excl/guide/slide_1.png"), Material("jailbreak_excl/guide/slide_2.png"), Material("jailbreak_excl/guide/slide_3.png"), Material("jailbreak_excl/guide/slide_4.png")}
@@ -114,11 +113,11 @@ function JB.MENU_HELP_OPTIONS()
                 hook.Remove("Think", "JB.Think._MENU_.CheckChangesToLogs")
                 local Panels = {}
                 local pnl
-                for _unused_135_21, v in ipairs(JB.ThisRound.Logs) do
+                for _, v in ipairs(JB.ThisRound.Logs) do
                     if not pnl or not pnl.subject or pnl.subject ~= v.subject then
                         pnl = vgui.Create("EditablePanel")
                         table.insert(Panels, pnl)
-                        pnl.Paint = function(_unused_139_47, w, h)
+                        pnl.Paint = function(_, w, h)
                             draw.RoundedBox(6, 0, 0, w, h - 10, JB.Color["#111"])
                             draw.RoundedBox(4, 1, 1, w - 2, h - 10 - 2, JB.Color["#333"])
                             draw.RoundedBox(0, 70 - 60 / 2, 1, 60, h - 2 - 10, JB.Color["#444"])
@@ -130,7 +129,7 @@ function JB.MENU_HELP_OPTIONS()
 
                     local textPanel = vgui.Create("Panel", pnl)
                     textPanel:SetWide(pnl:GetWide())
-                    textPanel.Paint = function(_unused_151_49, _unused_151_56, h)
+                    textPanel.Paint = function(_, _, h)
                         JB.Util.drawSimpleShadowText(v.time, "JBExtraSmall", 10, h / 2, JB.Color.white, 0, 1, 1)
                         JB.Util.drawSimpleShadowText(v.kind, "JBExtraSmall", 70, h / 2, JB.Color.white, 1, 1, 1)
                         local clr = JB.Color.white
@@ -150,7 +149,7 @@ function JB.MENU_HELP_OPTIONS()
                     textPanel:DockMargin(0, 2, 0, 2)
                 end
 
-                for _unused_171_21, v in ipairs(Panels) do
+                for _, v in ipairs(Panels) do
                     v:SetTall(#v:GetChildren() * 24 + 10)
                     scrollPanel:AddItem(v)
                     v:Dock(TOP)

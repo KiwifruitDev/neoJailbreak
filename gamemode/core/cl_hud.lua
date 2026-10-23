@@ -126,7 +126,7 @@ vgui.Register("JBHUDWardenFrame", {
         self.Player = setply
         self.Avatar:SetPlayer(setply, 32)
     end,
-    PaintOver = function(self, _unused_147_34, h)
+    PaintOver = function(self, _, h)
         setDrawColor(JB.Color.white)
         setMaterial(matWarden)
         drawTexturedRect(0, 0, 256, 64)
@@ -158,7 +158,7 @@ vgui.Register("JBHUDKillstreakFrame", {
         self:SetSize(256, 256)
         self:SetPos(0, ScrH() - 175)
     end,
-    PaintOver = function(_unused_181_27, _unused_181_34, _unused_181_38)
+    PaintOver = function()
         setDrawColor(JB.Color.white)
         setMaterial(matHint)
         drawTexturedRect(0, 0, 170, 170)
@@ -378,7 +378,7 @@ end
 
 -- GM HOOK
 local hookCall = hook.Call
-JB.Gamemode.HUDPaint = function(_unused_404_34)
+JB.Gamemode.HUDPaint = function()
     ply = LocalPlayer()
     if not IsValid(ply) then return end
     scrW, scrH, dt = ScrW(), ScrH(), FrameTime()

@@ -1,6 +1,6 @@
 ﻿if SERVER then
     util.AddNetworkString("sethealth")
-    net.Receive("sethealth", function(_unused_3_42, ply)
+    net.Receive("sethealth", function(_, ply)
         if ply.PS_Points >= 15 then
             ply:SetHealth(100)
             ply:SetArmor(100)
@@ -10,9 +10,9 @@
     end)
 
     util.AddNetworkString("givewep")
-    net.Receive("givewep", function(_unused_13_40, ply)
+    net.Receive("givewep", function(_, ply)
         if (ply:GetNWBool("boughtweapon") == false or ply:GetNWBool("boughtweapon") == nil) and ply.PS_Points >= __roundweapon[2] then
-            for _unused_16_21, v in pairs(ply:GetWeapons()) do
+            for _, v in pairs(ply:GetWeapons()) do
                 if v:GetSlot() == __roundweapon[4] then ply:StripWeapon(v:GetPrintName()) end
             end
 

@@ -21,28 +21,27 @@ local setTextColor = surface.SetTextColor
 local setFont = surface.SetFont
 local drawText = surface.DrawText
 local ceil = math.ceil
-local w, h
 -- actual function
 function JB.Util.drawSimpleShadowText(text, font, x, y, color, xalign, yalign, passes)
     if not font or not x or not y or not color or not xalign or not yalign then return end
     passes = passes or 2
     text = tostring(text)
     setFont(font .. "Shadow")
-    w, h = getTextSize(text)
+    local width, height = getTextSize(text)
     if xalign == TEXT_ALIGN_CENTER then
-        x = x - w / 2
+        x = x - width / 2
     elseif xalign == TEXT_ALIGN_RIGHT then
-        x = x - w
+        x = x - width
     end
 
     if yalign == TEXT_ALIGN_CENTER then
-        y = y - h / 2
+        y = y - height / 2
     elseif yalign == TEXT_ALIGN_BOTTOM then
-        y = y - h
+        y = y - height
     end
 
     setTextColor(0, 0, 0, color.a)
-    for _unused_66_9 = 1, passes do
+    for _ = 1, passes do
         setTextPos(ceil(x), ceil(y))
         drawText(text)
     end
@@ -51,5 +50,5 @@ function JB.Util.drawSimpleShadowText(text, font, x, y, color, xalign, yalign, p
     setTextPos(ceil(x), ceil(y))
     setTextColor(color.r, color.g, color.b, color.a)
     drawText(text)
-    return w, h
+    return width, height
 end

@@ -18,7 +18,7 @@ local slotPos = 1
 local function ArrangeSlots()
     slots = {}
     c = 0
-    for _unused_39_9, v in pairs(LocalPlayer():GetWeapons()) do
+    for _, v in pairs(LocalPlayer():GetWeapons()) do
         if v.Slot then
             if not slots[v.Slot + 1] then slots[v.Slot + 1] = {} end
             slots[v.Slot + 1][#slots[v.Slot + 1] + 1] = v
@@ -83,7 +83,7 @@ end)
 
 timer.Create("UpdateSWEPSelectthings", 1, 0, function() if selectedTab > 0 then ArrangeSlots() end end)
 local nScroll = 1
-function JB.Gamemode:PlayerBindPress(_unused_104_39, bind, pressed)
+function JB.Gamemode:PlayerBindPress(_, bind, pressed)
     if not pressed then return false end
     local check = function()
         if LocalPlayer():GetActiveWeapon() ~= NULL then

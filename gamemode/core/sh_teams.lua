@@ -42,20 +42,21 @@ function JB:BalanceTeams()
     local guards = JB:GetTeamPlayers(TEAM_GUARD)
     local prisoners = JB:GetTeamPlayers(TEAM_PRISONER)
     if #guards + #prisoners <= 1 then return end
-    local balls = {}
-    if #guards > JB:GetGuardsAllowed() then
-        for _unused_52_13 = 1, #guards - JB:GetGuardsAllowed() do
-            local ply = table.Random(guards)
-            if IsValid(ply) then
-                ply:SetTeam(TEAM_PRISONER)
-                if ply:IsPlayer() then ply:ChatPrint("You were moved to Prisoners to make the game more fair.") end
-                balls[#balls + 1] = ply
-                table.RemoveByValue(guards, ply)
-                prisoners[#prisoners + 1] = ply
+
+    local guardsAllowed = JB:GetGuardsAllowed()
+    local movedPlayers = {}
+    while #guards > guardsAllowed do
+        local guard = table.remove(guards, math.random(#guards))
+        if IsValid(guard) then
+            guard:SetTeam(TEAM_PRISONER)
+            if guard:IsPlayer() then
+                guard:ChatPrint("You were moved to Prisoners to make the game more fair.")
             end
+            movedPlayers[#movedPlayers + 1] = guard
         end
     end
-    return balls
+
+    return movedPlayers
 end
 
 local count

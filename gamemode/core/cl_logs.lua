@@ -28,7 +28,7 @@ Log generated at date]] .. os.date() .. [[
 
 ]])
         MsgC(JB.Color.white, "\n")
-        for _unused_49_13, v in pairs(DamageLog) do
+        for _, v in pairs(DamageLog) do
             MsgC(JB.Color.white, "[" .. v.time .. "] ")
             local clr = JB.Color.white
             for _, wr in pairs(v.message) do

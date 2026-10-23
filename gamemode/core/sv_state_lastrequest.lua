@@ -31,7 +31,7 @@ function JB:StartLastRequest(prisoner, lr, guard)
     return true
 end
 
-concommand.Add("jb_lastrequest_start", function(p, _unused_36_56, a)
+concommand.Add("jb_lastrequest_start", function(p, _, a)
     if not IsValid(p) or not p:IsPlayer() or not a or not a[1] or not a[2] then return end
     local lr = a[1]
     local guard = Entity(tonumber(a[2]))

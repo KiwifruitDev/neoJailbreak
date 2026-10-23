@@ -311,7 +311,7 @@ function SWEP:JB_ShootBullet(dmg, recoil, numbul, cone)
             Tracer = 3,
             Force = dmg / 4 * 3,
             Damage = dmg,
-            Callback = function(_unused_337_34, tr, _unused_337_50)
+            Callback = function(_, tr)
                 if tr.HitWorld and tr.MatType == MAT_METAL then
                     local eff = EffectData()
                     eff:SetOrigin(tr.HitPos)

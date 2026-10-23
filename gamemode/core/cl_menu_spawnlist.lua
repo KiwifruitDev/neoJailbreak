@@ -45,7 +45,7 @@ function JB.MENU_SPAWNMENU()
         btn_accept:SetVisible(false)
         --populate left panel
         left:DockMargin(0, 0, 0, 0)
-        local function selectItem(name, func, _unused_73_50)
+        local function selectItem(name, func, _)
             btn_accept:SetVisible(true)
             lr_selected = func
             lbl_SpawnMenuName:SetText(name)

@@ -40,7 +40,7 @@ config.notifyLG = makeConfig("jb_config_notify_lastguard", 1)
 JB = {}
 JB._IndexCallback = {} -- {get = function() end, set = function() end}
 setmetatable(JB, {
-    __index = function(_unused_61_25, key)
+    __index = function(_, key)
         if key == "Gamemode" then return GM or GAMEMODE or {} end
         if JB._IndexCallback[key] and JB._IndexCallback[key].get then return JB._IndexCallback[key].get() end
         return nil
@@ -58,7 +58,7 @@ setmetatable(JB, {
 
 JB.Config = {}
 setmetatable(JB.Config, {
-    __index = function(_unused_79_25, key)
+    __index = function(_, key)
         if config[key] then
             if SERVER then
                 local convar = GetConVar(config[key].name)
@@ -85,10 +85,12 @@ end
 
 -- some networking
 if CLIENT then
-    net.Receive("JB.FetchConfig", function(_unused_105_47)
-        for k, v in pairs(net.ReadTable() or {}) do
-            if not config[k] then return end
-            config[k].v = v
+    net.Receive("JB.FetchConfig", function()
+        local receivedConfig = net.ReadTable() or {}
+        for key, value in pairs(receivedConfig) do
+            if config[key] then
+                config[key].v = value
+            end
         end
 
         JB:DebugPrint("Config received!")
@@ -97,20 +99,20 @@ if CLIENT then
     hook.Add("InitPostEntity", "JB.FetchConfig.Load", function()
         net.Start("JB.FetchConfig")
         net.SendToServer()
-        hook.Remove("Initialize", "JB.FetchConfig.Load")
-        JB:DebugPrint("Requesting config. .. ")
+        hook.Remove("InitPostEntity", "JB.FetchConfig.Load")
+        JB:DebugPrint("Requesting config...")
     end)
 elseif SERVER then
     util.AddNetworkString("JB.FetchConfig")
-    net.Receive("JB.FetchConfig", function(_unused_122_47, ply)
+    net.Receive("JB.FetchConfig", function(_, ply)
         JB:DebugPrint("Received config request by: " .. ply:Nick())
-        net.Start("JB.FetchConfig")
-        local tab = {}
-        for k, _unused_126_17 in pairs(config) do
-            tab[k] = JB.Config[k]
+        local configValues = {}
+        for key in pairs(config) do
+            configValues[key] = JB.Config[key]
         end
 
-        net.WriteTable(tab)
+        net.Start("JB.FetchConfig")
+        net.WriteTable(configValues)
         net.Send(ply)
     end)
 end

@@ -142,7 +142,7 @@ local winner_found = false
 local LR = JB.CLASS_LR()
 LR:SetName("Trivia")
 LR:SetDescription("After the countdown, a random question about a random subject will be asked. The first person to answer this question correctly in chat will win the last request, the loser will be killed.")
-LR:SetStartCallback(function(_unused_163_32, _unused_163_43)
+LR:SetStartCallback(function()
     local subject = randomQuestions[math.random(1, #randomQuestions)]
     if type("subject") == "string" and subject == "mathproblem" then
         local operationsFirst = {" + ", " - "}
@@ -193,7 +193,7 @@ if SERVER then
     util.AddNetworkString("JB.LR.Trivia.SendQuestion")
     util.AddNetworkString("JB.LR.Trivia.SendPrepare")
     util.AddNetworkString("JB.LR.Trivia.SendWinner")
-    hook.Add("PlayerSay", "JB.PlayerSay.LR.Trivia", function(ply, text, _unused_214_79)
+    hook.Add("PlayerSay", "JB.PlayerSay.LR.Trivia", function(ply, text)
         if JB.LastRequest == id and table.HasValue(JB.LastRequestPlayers, ply) and string.find(string.lower(text), string.lower(answer)) and not winner_found then
             timer.Simple(0, function()
                 net.Start("JB.LR.Trivia.SendWinner")
@@ -201,7 +201,7 @@ if SERVER then
                 net.Broadcast()
             end)
 
-            for _unused_222_17, v in ipairs(JB.LastRequestPlayers) do
+            for _, v in ipairs(JB.LastRequestPlayers) do
                 if IsValid(v) and v ~= ply then v:Kill() end
             end
 
@@ -209,7 +209,7 @@ if SERVER then
         end
     end)
 elseif CLIENT then
-    hook.Add("PlayerBindPress", "JB.PlayerBindPress.LR.TriviaNoSayBindsFuckYou", function(pl, bind, _unused_230_107)
+    hook.Add("PlayerBindPress", "JB.PlayerBindPress.LR.TriviaNoSayBindsFuckYou", function(pl, bind, _)
         -- Not the safest way, but it requires the least amount of touching code outside of this file (without using nasty hacky methods)
         if JB.LastRequest == id and table.HasValue(JB.LastRequestPlayers, pl) and string.find(bind, "say") then return true end
     end)

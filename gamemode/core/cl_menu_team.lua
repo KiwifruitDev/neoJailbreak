@@ -11,7 +11,6 @@
     See LICENSE for copyright attribution and licensing information.
 ]]--
 
-local _unused_32_7 = Color(223, 223, 223, 230)
 local frame
 function JB.MENU_TEAM()
     if IsValid(frame) then frame:Remove() end

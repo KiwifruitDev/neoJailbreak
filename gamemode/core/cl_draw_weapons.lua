@@ -35,7 +35,7 @@ end
 
 hook.Add("PostPlayerDraw", "JB.PostPlayerDraw.DrawWeapons", function(p)
     local weps = p:GetWeapons()
-    for _unused_56_9, v in pairs(weps) do
+    for _, v in pairs(weps) do
         local mdl = clientModels[v:GetClass()]
         if IsValid(mdl) and p:GetActiveWeapon() and p:GetActiveWeapon():IsValid() and p:GetActiveWeapon():GetClass() ~= v:GetClass() then
             if v:IsSecondary() then

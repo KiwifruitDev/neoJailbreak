@@ -14,7 +14,7 @@
 function JB.Util.iterate(tab)
     local wrap = {}
     setmetatable(wrap, {
-        __index = function(_unused_35_29, req)
+        __index = function(_, req)
             return function(...)
                 for _, v in pairs(tab) do
                     if not (v[req] and type(v[req]) == "function") then continue end
@@ -33,7 +33,7 @@ function JB.Util.iterate(tab)
 end
 
 function JB.Util.isValid(...)
-    for _unused_54_9, v in ipairs{...} do
+    for _, v in ipairs{...} do
         if not IsValid(v) then return false end
     end
     return true
@@ -78,7 +78,7 @@ function JB.Util.addChatCommand(cmd, func)
    }
 end
 
-hook.Add("PlayerSay", "ChatCommands.Collection", function(ply, text, _unused_99_76)
+hook.Add("PlayerSay", "ChatCommands.Collection", function(ply, text)
     if text == "!collection" then
         ply:ChatPrint("https://steamcommunity.com/sharedfiles/filedetails/?id=1478358716")
         return ""

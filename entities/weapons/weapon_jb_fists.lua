@@ -32,7 +32,7 @@ SWEP.Secondary.Automatic = true
 SWEP.Secondary.Ammo = "none"
 local SwingSound = Sound("weapons/slam/throw.wav")
 local HitSound = Sound("Flesh.ImpactHard")
-function SWEP:PreDrawViewModel(_unused_53_33, _unused_53_38, _unused_53_44)
+function SWEP:PreDrawViewModel()
     if not self:GetRaised() then
         self.Correct = true
         render.SetBlend(0)
@@ -41,7 +41,7 @@ function SWEP:PreDrawViewModel(_unused_53_33, _unused_53_38, _unused_53_44)
     end
 end
 
-function SWEP:PostDrawViewModel(_unused_62_34, _unused_62_39, _unused_62_45)
+function SWEP:PostDrawViewModel()
     if self.Corrent then
         render.SetBlend(1)
         self.Correct = false
@@ -164,7 +164,7 @@ function SWEP:OnRemove()
     end
 end
 
-function SWEP:Holster(_unused_187_24)
+function SWEP:Holster()
     self:OnRemove()
     return true
 end
@@ -181,7 +181,6 @@ end
 function SWEP:Think()
     if self:GetRaised() then
         local vm = self:GetOwner():GetViewModel()
-        local _unused_204_15 = CurTime()
         local idletime = self:GetNextIdle()
         if idletime > 0 and CurTime() > idletime then
             vm:SendViewModelMatchingSequence(vm:LookupSequence("fists_idle_0" .. math.random(1, 2)))

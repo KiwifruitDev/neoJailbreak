@@ -13,11 +13,11 @@
 
 local randomGhostSFX = {"otterjailbreak/lc_ghost01.mp3", "otterjailbreak/lc_ghost02.mp3", "otterjailbreak/lc_ghost03.mp3", "otterjailbreak/lc_ghost04.mp3"}
 local undroppableWeapons = {"weapon_physcannon", "gmod_camera", "gmod_tool", "weapon_jb_fists"}
-local drop = function(ply, _unused_34_30, _unused_34_36)
+local drop = function(ply)
     if table.HasValue(JB.LastRequestPlayers, ply) and JB.LastRequestTypes[JB.LastRequest] and not JB.LastRequestTypes[JB.LastRequest]:GetCanDropWeapons() then return end
     JB:DebugPrint(ply:Nick() .. " dropped his/her weapon")
     local weapon = ply:GetActiveWeapon()
-    for _unused_38_9, v in pairs(undroppableWeapons) do
+    for _, v in pairs(undroppableWeapons) do
         if IsValid(weapon) and v == weapon:GetClass() then return false end
     end
 
@@ -31,13 +31,13 @@ end
 
 concommand.Add("jb_dropweapon", drop)
 JB.Util.addChatCommand("drop", drop)
-local bc = function(ply, _unused_52_28, args) if ply:IsAdmin() then JB:BroadcastNotification(table.concat(args, " ")) end end
+local bc = function(ply, _, args) if ply:IsAdmin() then JB:BroadcastNotification(table.concat(args, " ")) end end
 concommand.Add("jb_broadcast", bc)
 JB.Util.addChatCommand("broadcast", bc)
-local addks = function(ply, _unused_55_31, args) if ply:IsAdmin() then ply:SetNWInt("killstreak", ply:GetNWInt("killstreak") + tonumber(table.concat(args, " "))) end end
+local addks = function(ply, _, args) if ply:IsAdmin() then ply:SetNWInt("killstreak", ply:GetNWInt("killstreak") + tonumber(table.concat(args, " "))) end end
 concommand.Add("jb_addks", addks)
 JB.Util.addChatCommand("addks", addks)
-local setks = function(ply, _unused_58_31, args)
+local setks = function(ply, _, args)
     if ply:IsAdmin() then
         ply:SetNWInt("killstreak", tonumber(table.concat(args, " ")))
         ply:SetPos(Vector(2638.454834, 4929.103516, 640.380859))
@@ -46,7 +46,7 @@ end
 
 concommand.Add("jb_setks", setks)
 JB.Util.addChatCommand("setks", setks)
-local givewep = function(ply, _unused_67_33, args)
+local givewep = function(ply, _, args)
     if ply:IsAdmin() then
         ply:Give(table.concat(args, " "))
         ply:SelectWeapon(table.concat(args, " "))
@@ -55,10 +55,10 @@ end
 
 concommand.Add("jb_give", givewep)
 JB.Util.addChatCommand("give", givewep)
-local selwep = function(ply, _unused_76_32, args) ply:SelectWeapon(table.concat(args, "")) end
+local selwep = function(ply, _, args) ply:SelectWeapon(table.concat(args, "")) end
 concommand.Add("jb_select", selwep)
 JB.Util.addChatCommand("select", selwep)
-local wunderwaffe = function(ply, _unused_79_37, _unused_79_43)
+local wunderwaffe = function(ply)
     if ply:IsAdmin() then
         for _, targetPlayer in ipairs(player.GetAll()) do
             targetPlayer:Give("weapon_jb_teslagun")
@@ -68,7 +68,7 @@ end
 
 concommand.Add("jb_wunderwaffe", wunderwaffe)
 JB.Util.addChatCommand("wunderwaffe", wunderwaffe)
-local fc = function(ply, _unused_89_28, _unused_89_34)
+local fc = function(ply)
     if ply:IsAdmin() and #team.GetPlayers(TEAM_GUARD) >= 1 and #team.GetPlayers(TEAM_PRISONER) >= 1 then
         if SERVER then
             game.ConsoleCommand("sv_gravity 600\n")
@@ -147,11 +147,11 @@ concommand.Add("jb_admin_spawnmenu", function(ply)
     ply:SendLua("JB.MENU_SPAWNMENU()")
 end)
 
-concommand.Add("jb_admin_swap", function(p, _unused_172_49, a)
+concommand.Add("jb_admin_swap", function(p, _, a)
     if not IsValid(p) or not p:IsAdmin() then return end
     local steamid = a[1]
     if not steamid then return end
-    for _unused_176_9, v in ipairs(player.GetAll()) do
+    for _, v in ipairs(player.GetAll()) do
         if v:SteamID() == steamid then
             if p:Alive() then p:SendLua(string.format("surface.PlaySound(%q)", table.Random(randomGhostSFX))) end
             if v:Team() == TEAM_GUARD then
@@ -166,7 +166,7 @@ concommand.Add("jb_admin_swap", function(p, _unused_172_49, a)
                 hook.Call("JailBreakPlayerSwitchTeam", JB.Gamemode, p, p:Team())
             end
 
-            for _unused_191_17, it in ipairs(player.GetAll()) do
+            for _, it in ipairs(player.GetAll()) do
                 it:ChatPrint(p:Nick() .. " has force swapped " .. v:Nick() .. ".")
             end
             return
@@ -176,15 +176,15 @@ concommand.Add("jb_admin_swap", function(p, _unused_172_49, a)
     p:ChatPrint("User not found! " .. steamid)
 end)
 
-concommand.Add("jb_admin_swap_spectator", function(p, _unused_201_59, a)
+concommand.Add("jb_admin_swap_spectator", function(p, _, a)
     if not IsValid(p) or not p:IsAdmin() then return end
     local steamid = a[1]
     if not steamid then return end
-    for _unused_205_9, v in ipairs(player.GetAll()) do
+    for _, v in ipairs(player.GetAll()) do
         if v:SteamID() == steamid then
             v:SetTeam(TEAM_SPECTATOR)
             v:Kill()
-            for _unused_209_17, it in ipairs(player.GetAll()) do
+            for _, it in ipairs(player.GetAll()) do
                 it:ChatPrint(p:Nick() .. " has made " .. v:Nick() .. " a spectator.")
             end
             return
@@ -194,15 +194,15 @@ concommand.Add("jb_admin_swap_spectator", function(p, _unused_201_59, a)
     p:ChatPrint("User not found! " .. steamid)
 end)
 
-concommand.Add("jb_admin_revive", function(p, _unused_219_51, a)
+concommand.Add("jb_admin_revive", function(p, _, a)
     if not IsValid(p) or not p:IsAdmin() then return end
     local steamid = a[1]
     if not steamid then return end
-    for _unused_223_9, v in ipairs(player.GetAll()) do
+    for _, v in ipairs(player.GetAll()) do
         if v:SteamID() == steamid then
             v._jb_forceRespawn = true
             v:Spawn()
-            for _unused_227_17, it in ipairs(player.GetAll()) do
+            for _, it in ipairs(player.GetAll()) do
                 it:ChatPrint(p:Nick() .. " has revived " .. v:Nick() .. ".")
             end
             return

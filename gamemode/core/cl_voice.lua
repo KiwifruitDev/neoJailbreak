@@ -67,7 +67,7 @@ end
 
 function PANEL:PaintOver()
     if not IsValid(self.ply) or not IsValid(self.Avatar) then return end
-    local _unused_88_11, h = self.Avatar:GetSize()
+    local _, h = self.Avatar:GetSize()
     local col = team.GetColor(self.ply:Team())
     if not self.ply:Alive() then
         col.r = math.Clamp(col.r * .6, 0, 255)
@@ -98,7 +98,7 @@ function PANEL:Think()
     end
 end
 
-function PANEL:FadeOut(anim, delta, _unused_119_40)
+function PANEL:FadeOut(anim, delta)
     if anim.Finished then
         if IsValid(PlayerVoicePanels[self.ply]) then
             PlayerVoicePanels[self.ply]:Remove()
@@ -133,8 +133,11 @@ function JB.Gamemode:PlayerStartVoice(ply)
 end
 
 timer.Create("JB.VoiceClean", 10, 0, function()
-    for k, _unused_154_13 in pairs(PlayerVoicePanels) do
-        if not IsValid(k) then GAMEMODE:PlayerEndVoice(k) end
+    for ply, panel in pairs(PlayerVoicePanels) do
+        if not IsValid(ply) then
+            if IsValid(panel) then panel:Remove() end
+            PlayerVoicePanels[ply] = nil
+        end
     end
 end)
 

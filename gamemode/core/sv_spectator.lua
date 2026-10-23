@@ -11,7 +11,7 @@
     See LICENSE for copyright attribution and licensing information.
 ]]--
 
-JB.Gamemode.PlayerSpawnAsSpectator = function(_unused_32_48, ply)
+JB.Gamemode.PlayerSpawnAsSpectator = function(_, ply)
     ply:StripWeapons()
     if ply:Team() == TEAM_UNASSIGNED then
         ply:Spectate(OBS_MODE_FIXED)
@@ -74,7 +74,6 @@ hook.Add("KeyPress", "JB.KeyPress.HandleSpectateControls", function(p, key)
                     return
                 end
 
-                local _unused_97_23 = p.spec
                 if doNext then
                     p.spec = p.spec + 1
                     if p.spec > #canspec then p.spec = 0 end
