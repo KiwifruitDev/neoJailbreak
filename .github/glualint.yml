@@ -1,0 +1,18 @@
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '**.lua'
+
+  pull_request:
+    branches:
+      - master
+    paths:
+      - '**.lua'
+
+jobs:
+  glualint:
+    uses: FPtje/GLuaFixer/.github/workflows/glualint.yml@master
+    with:
+      config: glualint.json
