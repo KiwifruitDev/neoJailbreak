@@ -15,16 +15,14 @@ AddCSLuaFile()
 ENT.Type = "anim"
 ENT.Base = "base_anim"
 function ENT:Initialize()
-    if SERVER then
-        self:SetModel("models/detective.mdl")
-        timer.Simple(0, function() self:SetSequence("pose_standing_01") end)
-        self:SetUseType(SIMPLE_USE)
-        self:PhysicsInit(SOLID_VPHYSICS)
-        self:SetMoveType(MOVETYPE_VPHYSICS)
-        self:SetSolid(SOLID_VPHYSICS)
-        local phys = self:GetPhysicsObject()
-        if IsValid(phys) then phys:Wake() end
-    end
+    if not SERVER then return end
+
+    self:SetModel("models/player/police.mdl")
+    self:SetMoveType(MOVETYPE_NONE)
+    self:SetSolid(SOLID_BBOX)
+    self:SetUseType(SIMPLE_USE)
+
+    self:ResetSequence(self:LookupSequence("pose_standing_01"))
 end
 
 function ENT:Use(p)
