@@ -58,16 +58,6 @@ JB.Util.addChatCommand("give", givewep)
 local selwep = function(ply, _, args) ply:SelectWeapon(table.concat(args, "")) end
 concommand.Add("jb_select", selwep)
 JB.Util.addChatCommand("select", selwep)
-local wunderwaffe = function(ply)
-    if ply:IsAdmin() then
-        for _, targetPlayer in ipairs(player.GetAll()) do
-            targetPlayer:Give("weapon_jb_teslagun")
-        end
-    end
-end
-
-concommand.Add("jb_wunderwaffe", wunderwaffe)
-JB.Util.addChatCommand("wunderwaffe", wunderwaffe)
 local fc = function(ply)
     if ply:IsAdmin() and #team.GetPlayers(TEAM_GUARD) >= 1 and #team.GetPlayers(TEAM_PRISONER) >= 1 then
         if SERVER then

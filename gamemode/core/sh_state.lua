@@ -165,7 +165,7 @@ end
 -- Round System
 
 JB.ThisRound = {}
-local randomWeapons = {{"Wunderwaffe DG-2", 100, "weapon_jb_teslagun", 3}, {"Mac 10", 75, "weapon_jb_mac10", 1}, {"Knife", 10, "weapon_jb_knife", 3}, {"Glock", 35, "weapon_jb_glock", 2}, {"AWP", 45, "weapon_jb_awp", 1}, {"AK-47", 50, "weapon_jb_ak47", 1}, {"FAMAS", 45, "weapon_jb_famas", 1}}
+local randomWeapons = {{"Mac 10", 75, "weapon_jb_mac10", 1}, {"Knife", 10, "weapon_jb_knife", 3}, {"Glock", 35, "weapon_jb_glock", 2}, {"AWP", 45, "weapon_jb_awp", 1}, {"AK-47", 50, "weapon_jb_ak47", 1}, {"FAMAS", 45, "weapon_jb_famas", 1}}
 __roundweapon = {"Mac 10", 75, "weapon_jb_mac10", 1}
 local wantStartup = false
 function JB:NewRound(rounds_passed)
