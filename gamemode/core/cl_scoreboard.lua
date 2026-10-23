@@ -160,7 +160,7 @@ vgui.Register("JBScoreboard.PlayerRow", {
         --status
         if self.Player:GetWarden() then
             draw.SimpleText("Warden", "JBLargeBold", self:GetWide() / 2 + 26, 26, color_faded, 1)
-        elseif self.Player:GetRebel() then
+        elseif self.Player.GetRebel and self.Player:GetRebel() then
             draw.SimpleText("Rebel", "JBLargeBold", self:GetWide() / 2 + 30, 26, color_faded, 1)
         end
     end

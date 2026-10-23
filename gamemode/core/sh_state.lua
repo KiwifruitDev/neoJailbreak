@@ -302,6 +302,11 @@ elseif SERVER then
             JB:NewRound()
         end
 
+        if JB.State == STATE_PLAYING and CurTime() - JB.RoundStartTime >= 600 then
+            JB:EndRound()
+            return
+        end
+
         if JB.State ~= STATE_PLAYING and JB.State ~= STATE_SETUP and JB.State ~= STATE_LASTREQUEST or #JB:GetTeamPlayers(TEAM_GUARD) < 1 or #JB:GetTeamPlayers(TEAM_PRISONER) < 1 then return end
         local count_guard = JB:AliveGuards()
         local count_prisoner = JB:AlivePrisoners()
