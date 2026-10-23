@@ -1,13 +1,13 @@
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - '**.lua'
 
   pull_request:
     branches:
-      - master
+      - main
     paths:
       - '**.lua'
 
