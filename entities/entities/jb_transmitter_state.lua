@@ -40,6 +40,7 @@ function ENT:SetupDataTables()
     self:NetworkVar("Entity", 2, "JBWarden")
     self:NetworkVar("Bool", 0, "JBWarden_PVPDamage")
     self:NetworkVar("Bool", 1, "JBWarden_ItemPickup")
+    self:NetworkVar("Bool", 2, "JBWarden_GuardDamage")
     if SERVER then
         self:SetJBRoundStartTime(0)
         self:SetJBState(STATE_IDLE)
@@ -47,6 +48,9 @@ function ENT:SetupDataTables()
         self:SetJBRoundsPassed(0)
         self:SetJBWarden_PointerType("0")
         self:SetJBWarden_PointerPos(Vector(0, 0, 0))
+        self:SetJBWarden_PVPDamage(false)
+        self:SetJBWarden_ItemPickup(false)
+        self:SetJBWarden_GuardDamage(false)
     end
 end
 

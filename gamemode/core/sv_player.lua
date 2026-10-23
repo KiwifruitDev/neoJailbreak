@@ -74,7 +74,13 @@ JB.Gamemode.PlayerShouldTakeDamage = function(_, a, b)
         local bIsCombatant = b:IsPlayer()
         local aTeam = a:Team()
         local bTeam = b:Team()
-        if aIsCombatant and bIsCombatant and aTeam == bTeam and (JB.State == STATE_SETUP or JB.State == STATE_PLAYING or JB.State == STATE_LASTREQUEST) and (not IsValid(JB.TRANSMITTER) or aTeam ~= TEAM_PRISONER or not JB.TRANSMITTER:GetJBWarden_PVPDamage()) then
+        if aIsCombatant and bIsCombatant and aTeam == bTeam and (JB.State == STATE_SETUP or JB.State == STATE_PLAYING or JB.State == STATE_LASTREQUEST) then
+            if aTeam == TEAM_PRISONER then
+                return IsValid(JB.TRANSMITTER) and JB.TRANSMITTER:GetJBWarden_PVPDamage()
+            elseif aTeam == TEAM_GUARD then
+                return IsValid(JB.TRANSMITTER) and JB.TRANSMITTER:GetJBWarden_GuardDamage()
+            end
+
             return false
         end
     end

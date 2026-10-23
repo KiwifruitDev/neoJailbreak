@@ -52,9 +52,14 @@ concommand.Add("jb_warden_changecontrol", function(p, _, a)
     elseif opt == "PVP" then
         JB.TRANSMITTER:SetJBWarden_PVPDamage(tobool(val))
         JB:BroadcastNotification("Friendly fire is now " .. (tobool(val) and "enabled" or "disabled"))
+    elseif opt == "GuardPVP" then
+        JB.TRANSMITTER:SetJBWarden_GuardDamage(tobool(val))
+        JB:BroadcastNotification("Guard friendly fire is now " .. (tobool(val) and "enabled" or "disabled"))
     elseif opt == "Pickup" then
         JB.TRANSMITTER:SetJBWarden_ItemPickup(tobool(val))
         JB:BroadcastNotification("Item pickup is now " .. (tobool(val) and "enabled" or "disabled"))
+    else
+        return
     end
 
     hook.Call("JailBreakWardenControlChanged", JB.Gamemode, p, opt, val)
