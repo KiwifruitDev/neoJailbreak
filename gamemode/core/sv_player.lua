@@ -12,22 +12,30 @@
 ]]--
 
 local randomGhostSFX = {"#otterjailbreak/lc_ghost01.mp3", "#otterjailbreak/lc_ghost02.mp3", "#otterjailbreak/lc_ghost03.mp3", "#otterjailbreak/lc_ghost04.mp3"}
+local function getJoinTeam()
+    local guardCount = #team.GetPlayers(TEAM_GUARD)
+    local prisonerCount = #team.GetPlayers(TEAM_PRISONER)
+    if prisonerCount <= guardCount then return TEAM_PRISONER end
+    return TEAM_GUARD
+end
+
 JB.Gamemode.PlayerInitialSpawn = function(_, ply)
-    ply:SetTeam(TEAM_PRISONER) -- always spawn as prisoner
+    ply:SetTeam(getJoinTeam())
     JB:DebugPrint(ply:Nick() .. " has successfully joined the server.")
     --ply:ConCommand("snd_restart") --if they join the server with the content addon, their sound may not work properly
     ply:SendLua(string.format("surface.PlaySound(%q)", "#otterjailbreak/waitingforplayers.wav"))
 end
 
 JB.Gamemode.PlayerSelectSpawn = function(gm, ply, transition)
-    if transition then return end
-
-    local spawnPoints = {}
-    for _, spawnClass in ipairs(team.GetSpawnPoint(ply:Team()) or {}) do
-        table.Add(spawnPoints, ents.FindByClass(spawnClass))
-    end
+    local spawnClass = ply:Team() == TEAM_GUARD and "info_player_counterterrorist" or ply:Team() == TEAM_PRISONER and "info_player_terrorist"
+    local spawnPoints = spawnClass and ents.FindByClass(spawnClass) or {}
 
     if #spawnPoints > 0 then return table.Random(spawnPoints) end
+
+    if ply:Team() == TEAM_GUARD or ply:Team() == TEAM_PRISONER then
+        ErrorNoHalt("No " .. spawnClass .. " spawn points found for " .. team.GetName(ply:Team()) .. ".\n")
+        return
+    end
 
     return gm.BaseClass.PlayerSelectSpawn(gm, ply, transition)
 end
@@ -44,7 +52,12 @@ function JB.Gamemode:OnPhysgunReload(_, ply)
 end
 
 JB.Gamemode.PlayerSpawn = function(gm, ply)
-    if ply:Team() ~= TEAM_PRISONER and ply:Team() ~= TEAM_GUARD or not ply._jb_forceRespawn and (JB.State == STATE_LASTREQUEST or JB.State == STATE_PLAYING or JB.State ~= STATE_IDLE and CurTime() - JB.RoundStartTime > 10) then
+    if ply:Team() == TEAM_UNASSIGNED then
+        ply:SetTeam(getJoinTeam())
+    end
+
+    local spawnLocked = JB.State == STATE_PLAYING or JB.State == STATE_LASTREQUEST or JB.State == STATE_SETUP and CurTime() - JB.RoundStartTime > 10
+    if ply:Team() ~= TEAM_PRISONER and ply:Team() ~= TEAM_GUARD or not ply._jb_forceRespawn and spawnLocked then
         ply:KillSilent()
         gm:PlayerSpawnAsSpectator(ply)
         return

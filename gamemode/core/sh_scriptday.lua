@@ -35,7 +35,7 @@ function JB:GetActiveScriptday()
 end
 
 function JB:GetTeamName(teamID)
-    local name = team.GetName(teamID) or ""
+    local name = teamID == TEAM_PRISONER and "Prisoners" or teamID == TEAM_GUARD and "Guards" or team.GetName(teamID) or ""
     local scriptday = self:GetActiveScriptday()
     local scriptdayID = scriptday and scriptday.ID or ""
     local hookName = hook.Call("JailBreakGetTeamName", self.Gamemode, teamID, name, scriptdayID)
