@@ -12,27 +12,46 @@
 ]]--
 
 local pmeta = FindMetaTable("Player")
+
+local function setPlayerTeamColor(ply, teamID)
+    local color
+    if teamID == TEAM_GUARD then
+        color = Vector(0, 0, 1)
+    elseif teamID == TEAM_PRISONER and ply.GetRebel and ply:GetRebel() then
+        color = Vector(1, 0, 0)
+    else
+        color = Vector(1, 1, 1)
+    end
+
+    ply:SetPlayerColor(color)
+    ply:SetWeaponColor(color)
+end
 -- PLAYER CLASS SETTING
 local oldSetTeam = pmeta.SetTeam
 function pmeta:SetTeam(tm)
     player_manager.SetPlayerClass(self, tm == TEAM_GUARD and "player_guard" or tm == TEAM_PRISONER and "player_prisoner" or "player_spectator")
     oldSetTeam(self, tm)
+    setPlayerTeamColor(self, tm)
 end
+
+hook.Add("PlayerSpawn", "JB.PlayerSpawn.SetTeamColor", function(ply)
+    timer.Simple(0, function()
+        if IsValid(ply) then setPlayerTeamColor(ply, ply:Team()) end
+    end)
+end)
 
 -- PRISONER STATUS
 function pmeta:AddRebelStatus()
     if self:Team() ~= TEAM_PRISONER or not self:Alive() then return end
     self:SetRebel(true)
     JB:BroadcastNotification(self:Nick() .. " is rebelling!")
-    self:SetPlayerColor(Vector(1, 0, 0))
-    self:SetWeaponColor(Vector(1, 0, 0))
+    setPlayerTeamColor(self, TEAM_PRISONER)
 end
 
 function pmeta:RemoveRebelStatus()
     if not self.SetRebel then return end
     self:SetRebel(false)
-    self:SetPlayerColor(Vector(.9, .9, .9))
-    self:SetWeaponColor(Vector(.9, .9, .9))
+    setPlayerTeamColor(self, TEAM_PRISONER)
 end
 
 -- WARDEN STATUS

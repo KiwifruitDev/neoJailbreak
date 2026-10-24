@@ -442,7 +442,7 @@ JB.Gamemode.HUDDrawTargetID = function()
     if ent:IsPlayer() then
         text = ent:Nick()
         text_sub = ent:GetPos():Distance(LocalPlayer():EyePos()) < 200 and ent:Health() .. "% HP" .. (ent.GetRebel and ent:GetRebel() and " | Rebel" or ent.GetWarden and ent:GetWarden() and " | Warden" or "")
-        text_color = team.GetColor(ent:Team())
+        text_color = JB:GetTeamColor(ent:Team())
     elseif ent:IsWeapon() then
         local tab = weapons.Get(ent:GetClass())
         text = tab and tab.PrintName or ent:GetClass()

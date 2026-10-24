@@ -121,18 +121,6 @@ vgui.Register("JBScoreboard.PlayerRow", {
         if not IsValid(self.Player) then return end
         local playerTeam = getScoreTeam(self.Player)
         local col = JB:GetTeamColor(playerTeam)
-        if not isScoreAlive(self.Player) then
-            col.r = math.Clamp(col.r * .6, 0, 255)
-            col.g = math.Clamp(col.g * .6, 0, 255)
-            col.b = math.Clamp(col.b * .6, 0, 255)
-        end
-
-        if self.Player == LocalPlayer() then
-            local add = math.abs(math.sin(CurTime() * 1) * 50)
-            col.r = math.Clamp(col.r + add, 0, 255)
-            col.g = math.Clamp(col.g + add, 0, 255)
-            col.b = math.Clamp(col.b + add, 0, 255)
-        end
 
         surface.SetDrawColor(col)
         surface.SetMaterial(matAva)

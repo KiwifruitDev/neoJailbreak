@@ -27,8 +27,8 @@ PLAYER.StartArmor = 50
 PLAYER.DropWeaponOnDie = false
 PLAYER.AvoidPlayers = false
 function PLAYER:Spawn()
-    self.Player:SetPlayerColor(Vector(.9, .9, .9))
-    self.Player:SetWeaponColor(Vector(.9, .9, .9))
+    self.Player:SetPlayerColor(Vector(1, 1, 1))
+    self.Player:SetWeaponColor(Vector(1, 1, 1))
     self.Player:SetRebel(false)
     self.Player:GiveAmmo(50, "Pistol", true)
     self.Player:GiveAmmo(100, "SMG1", true)
