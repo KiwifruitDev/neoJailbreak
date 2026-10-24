@@ -145,40 +145,40 @@ function SWEP:Holster()
         self:GetOwner():SetFOV(0, 0.6)
         self:GetOwner():SetWalkSpeed(self.originalWalkSpeed)
     end
+    self:SetReloading(false)
     return true
 end
 
-SWEP.NextReload = CurTime()
-function SWEP:Reload()
-    if self.NextReload > CurTime() or self:GetOwner():GetAmmoCount(self.Primary.Ammo) <= 0 or self:GetNWMode() == MODE_SPRINT or self:GetNWMode() == MODE_AIM or not IsFirstTimePredicted() then return end
-    self:SetNWMode(MODE_NORMAL)
+function SWEP:Reload(automatic)
+    local owner = self:GetOwner()
+    if not IsValid(owner) or self:GetReloading() or self.Primary.ClipSize <= 0 or self:Clip1() >= self.Primary.ClipSize or owner:GetAmmoCount(self.Primary.Ammo) <= 0 or self:GetNWMode() == MODE_SPRINT or self:GetNWMode() == MODE_AIM and not automatic or not IsFirstTimePredicted() then return end
+    if not automatic then self:SetNWMode(MODE_NORMAL) end
     self:SendWeaponAnim(ACT_VM_RELOAD)
-    self:GetOwner():SetAnimation(PLAYER_RELOAD)
-    self.NextReload = CurTime() + 4
+    owner:SetAnimation(PLAYER_RELOAD)
     local clip = self:Clip1()
     local dur
     if clip > 0 then
         self.Rechamber = false
-        self:SetClip1(1)
-        dur = self:GetOwner():GetViewModel():SequenceDuration()
+        dur = owner:GetViewModel():SequenceDuration()
     else
         self.Rechamber = true
-        dur = self.ReloadSequenceTime or self:GetOwner():GetViewModel():SequenceDuration()
+        dur = self.ReloadSequenceTime or owner:GetViewModel():SequenceDuration()
     end
 
     self:SetNextPrimaryFire(CurTime() + dur)
-    timer.Create(self:GetOwner():SteamID() .. "ReloadTimer", dur, 1, function()
-        if not self or not IsValid(self) or not self:GetOwner() or not IsValid(self:GetOwner()) then return end
-        amt = math.Clamp(self:GetOwner():GetAmmoCount(self.Primary.Ammo), 0, self.Primary.ClipSize)
-
-        self:GetOwner():RemoveAmmo(amt, self.Primary.Ammo)
-        if not self.Rechamber then
-            if SERVER then self:SetClip1(amt + 1) end
-        else
-            if SERVER then self:SetClip1(amt) end
-            self:SendWeaponAnim(ACT_VM_DRAW)
-            self:SetNextPrimaryFire(CurTime() + .2)
+    local timerID = owner:SteamID() .. "ReloadTimer"
+    timer.Create(timerID, dur, 1, function()
+        if not IsValid(self) or not IsValid(owner) or self:GetOwner() ~= owner then return end
+        if SERVER then
+            local currentClip = math.max(self:Clip1(), 0)
+            local ammoToLoad = math.min(self.Primary.ClipSize - currentClip, owner:GetAmmoCount(self.Primary.Ammo))
+            if ammoToLoad > 0 then
+                owner:RemoveAmmo(ammoToLoad, self.Primary.Ammo)
+                self:SetClip1(currentClip + ammoToLoad)
+            end
         end
+
+        if self.Rechamber then self:SetNextPrimaryFire(CurTime() + .2) end
 
         self:SetReloading(false)
     end)
@@ -277,7 +277,7 @@ function SWEP:PrimaryAttack()
     end
 
     self:TakePrimaryAmmo(1)
-    if self:Clip1() <= 0 and cvarAutoReload:GetBool(self:GetOwner()) then self:Reload() end
+    if self:Clip1() <= 0 and cvarAutoReload:GetBool(self:GetOwner()) then self:Reload(true) end
 end
 
 function SWEP:SecondaryAttack()
