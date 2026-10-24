@@ -53,103 +53,71 @@ SWEP.Secondary.Ammo = "none"
 SWEP.Secondary.Delay = 5
 SWEP.HoldType = "knife"
 SWEP.HitDistance = 50
+SWEP.HitDelay = 0.07
 local sound_single = Sound("weapons/knife/knife_slash1.wav")
+local sound_hit = Sound("weapons/knife/knife_hit1.wav")
+local sound_hit_wall = Sound("weapons/knife/knife_hitwall1.wav")
 function SWEP:Initialize()
     self:SetWeaponHoldType(self.HoldType)
 end
 
 function SWEP:PrimaryAttack()
     self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
-    if not IsValid(self:GetOwner()) then return end
-    if self:GetOwner().LagCompensation and SERVER then self:GetOwner():LagCompensation(true) end
-    --self.Owner:SetAnimation(PLAYER_ATTACK1)
+    local owner = self:GetOwner()
+    if not IsValid(owner) then return end
+
+    owner:SetAnimation(PLAYER_ATTACK1)
     self:SendWeaponAnim(ACT_VM_MISSCENTER)
-    local spos = self:GetOwner():GetShootPos()
-    local sdest = spos + self:GetOwner():GetAimVector() * 70
-    local tr_main = util.TraceLine({
-        start = self:GetOwner():GetShootPos(),
-        endpos = self:GetOwner():GetShootPos() + self:GetOwner():GetAimVector() * self.HitDistance,
-        filter = self:GetOwner()
-   })
+    if SERVER then
+        owner:EmitSound(sound_single)
 
-    if not IsValid(tr_main.Entity) then
-        tr_main = util.TraceHull({
-            start = self:GetOwner():GetShootPos(),
-            endpos = self:GetOwner():GetShootPos() + self:GetOwner():GetAimVector() * self.HitDistance,
-            filter = self:GetOwner(),
-            mins = Vector(-15, -15, -8),
-            maxs = Vector(15, 15, 8)
-       })
-    end
+        timer.Simple(self.HitDelay, function()
+            if not IsValid(self) or not IsValid(owner) then return end
 
-    local hitEnt = tr_main.Entity
-    self:GetOwner():SetAnimation(PLAYER_ATTACK1)
-    self:SendWeaponAnim(ACT_VM_HITCENTER)
-    if IsValid(hitEnt) then
-        self:EmitSound(sound_single)
-        if SERVER and IsFirstTimePredicted() then
-            local edata = EffectData()
-            edata:SetStart(spos)
-            edata:SetOrigin(tr_main.HitPos)
-            edata:SetNormal(tr_main.Normal)
-            edata:SetEntity(hitEnt)
-            if hitEnt:IsPlayer() or hitEnt:GetClass() == "prop_ragdoll" then
-                timer.Simple(0.05, function() self:EmitSound("weapons/knife/knife_hit1.wav") end)
-                util.Effect("BloodImpact", edata)
-                self:GetOwner():FireBullets({
-                    Num = 1,
-                    Src = spos,
-                    Dir = self:GetOwner():GetAimVector(),
-                    Spread = Vector(0, 0, 0),
-                    Tracer = 0,
-                    Force = 1,
-                    Damage = 0
-               })
-            else
-                timer.Simple(0.05, function() self:EmitSound("weapons/knife/knife_hitwall1.wav") end)
-                util.Effect("Impact", edata)
+            local startPos = owner:GetShootPos()
+            local aimVector = owner:GetAimVector()
+            local endPos = startPos + aimVector * self.HitDistance
+            if owner:IsPlayer() then owner:LagCompensation(true) end
+            local trace = util.TraceLine({
+                start = startPos,
+                endpos = endPos,
+                filter = owner
+           })
+            if owner:IsPlayer() then owner:LagCompensation(false) end
+            if not trace.Hit then return end
+
+            local hitEnt = trace.Entity
+            local isFlesh = IsValid(hitEnt) and (hitEnt:IsPlayer() or hitEnt:IsNPC() or hitEnt:GetClass() == "prop_ragdoll")
+            self:EmitSound(isFlesh and sound_hit or sound_hit_wall)
+
+            local effectData = EffectData()
+            effectData:SetStart(startPos)
+            effectData:SetOrigin(trace.HitPos)
+            effectData:SetNormal(trace.HitNormal)
+            effectData:SetSurfaceProp(trace.SurfaceProps)
+            effectData:SetHitBox(trace.HitBox)
+            effectData:SetDamageType(DMG_SLASH)
+            if IsValid(hitEnt) then effectData:SetEntity(hitEnt) end
+            if isFlesh and not hitEnt:IsPlayer() and not hitEnt:IsNPC() then
+                util.Effect("BloodImpact", effectData, true, true)
+            elseif not isFlesh then
+                util.Effect("StunstickImpact", effectData, true, true)
             end
-        end
-    elseif tr_main.HitWorld then
-        self:EmitSound(sound_single)
-        timer.Simple(0.05, function() self:EmitSound("weapons/knife/knife_hitwall1.wav") end)
-        if SERVER and IsFirstTimePredicted() then
-            local edata = EffectData()
-            edata:SetStart(spos)
-            edata:SetOrigin(tr_main.HitPos)
-            edata:SetNormal(tr_main.Normal)
-            edata:SetEntity(hitEnt)
-            if hitEnt:IsPlayer() or hitEnt:GetClass() == "prop_ragdoll" then
-                util.Effect("BloodImpact", edata)
-                self:GetOwner():FireBullets({
-                    Num = 1,
-                    Src = spos,
-                    Dir = self:GetOwner():GetAimVector(),
-                    Spread = Vector(0, 0, 0),
-                    Tracer = 0,
-                    Force = 1,
-                    Damage = 0
-               })
-            else
-                util.Effect("Impact", edata)
+            local decal = isFlesh and "Blood" or "ManhackCut"
+            util.Decal(decal, trace.HitPos + trace.HitNormal * 8, trace.HitPos - trace.HitNormal * 8)
+
+            if IsValid(hitEnt) and not trace.HitWorld and (hitEnt:IsPlayer() or hitEnt:IsNPC() or hitEnt:Health() > 0) then
+                local dmg = DamageInfo()
+                dmg:SetDamage(self.Primary.Damage)
+                dmg:SetAttacker(owner)
+                dmg:SetInflictor(self)
+                dmg:SetDamageForce(aimVector * 1500)
+                dmg:SetDamagePosition(trace.HitPos)
+                dmg:SetDamageType(DMG_SLASH)
+                hitEnt:DispatchTraceAttack(dmg, trace, aimVector)
             end
-        end
-    else
-        self:EmitSound(sound_single)
+        end)
     end
-
-    if SERVER and hitEnt and hitEnt:IsValid() then
-        local dmg = DamageInfo()
-        dmg:SetDamage(self.Primary.Damage)
-        dmg:SetAttacker(self:GetOwner())
-        dmg:SetInflictor(self)
-        dmg:SetDamageForce(self:GetOwner():GetAimVector() * 1500)
-        dmg:SetDamagePosition(self:GetOwner():GetPos())
-        dmg:SetDamageType(DMG_CLUB)
-        hitEnt:DispatchTraceAttack(dmg, spos + self:GetOwner():GetAimVector() * 3, sdest)
-    end
-
-    if self:GetOwner().LagCompensation and SERVER then self:GetOwner():LagCompensation(false) end
 end
 
 function SWEP:SecondaryAttack()
