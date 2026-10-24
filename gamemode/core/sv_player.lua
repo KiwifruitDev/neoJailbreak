@@ -279,7 +279,19 @@ JB.Gamemode.ScalePlayerDamage = function(_, _, hitgroup, dmginfo)
 end
 
 JB.Gamemode.GetFallDamage = function() return 0 end
-local fallsounds = {Sound("player/damage1.wav"), Sound("player/damage2.wav"), Sound("player/damage3.wav")}
+local painSounds = {"vo/npc/male01/ow01.wav", "vo/npc/male01/ow02.wav"}
+local femalePainSounds = {"vo/npc/female01/ow01.wav", "vo/npc/female01/ow02.wav"}
+local guardPainSounds = {"npc/metropolice/pain1.wav", "npc/metropolice/pain2.wav", "npc/metropolice/pain3.wav", "npc/metropolice/pain4.wav"}
+local function playPlayerPainSound(ply)
+    local sounds = painSounds
+    if ply:GetModel():find("/female") then
+        sounds = femalePainSounds
+    elseif ply:Team() == TEAM_GUARD then
+        sounds = guardPainSounds
+    end
+    ply:EmitSound(sounds[math.random(#sounds)], math.random(100, 140), math.random(90, 110))
+end
+
 JB.Gamemode.OnPlayerHitGround = function(_, ply, in_water, on_floater, speed)
     if in_water or speed < 460 or not IsValid(ply) then return end
     local damage = math.pow(0.05 * (speed - 420), 1.30)
@@ -292,7 +304,14 @@ JB.Gamemode.OnPlayerHitGround = function(_, ply, in_water, on_floater, speed)
         dmg:SetDamageForce(Vector(0, 0, 1))
         dmg:SetDamage(damage)
         ply:TakeDamageInfo(dmg)
-        if damage > 5 then sound.Play(table.Random(fallsounds), ply:GetShootPos(), 55 + math.Clamp(damage, 0, 50), 100) end
+        ply:EmitSound("player/pl_fallpain.wav")
+        if damage > 5 then
+            -- only play pain sound if the player is still alive
+            local plyhealth = ply:Health()
+            if plyhealth > 0 then
+                playPlayerPainSound(ply)
+            end
+        end
     end
 end
 
@@ -310,8 +329,23 @@ hook.Add("PlayerDisconnected", "JB.PlayerDisconnected.CheckDisconnect", function
     end
 end)
 
+local deathSounds = {"vo/npc/male01/pain01.wav", "vo/npc/male01/pain02.wav", "vo/npc/male01/pain03.wav", "vo/npc/male01/pain04.wav", "vo/npc/male01/pain05.wav", "vo/npc/male01/pain06.wav", "vo/npc/male01/pain07.wav", "vo/npc/male01/pain08.wav", "vo/npc/male01/pain09.wav"}
+local femaleDeathSounds = {"vo/npc/female01/pain01.wav", "vo/npc/female01/pain02.wav", "vo/npc/female01/pain03.wav", "vo/npc/female01/pain04.wav", "vo/npc/female01/pain05.wav", "vo/npc/female01/pain06.wav", "vo/npc/female01/pain07.wav", "vo/npc/female01/pain08.wav", "vo/npc/female01/pain09.wav"}
+local guardDeathSounds = {"npc/metropolice/die1.wav", "npc/metropolice/die2.wav", "npc/metropolice/die3.wav", "npc/metropolice/die4.wav"}
+local function playPlayerDeathSound(ply)
+    local sounds = deathSounds
+    if ply:GetModel():find("/female") then
+        sounds = femaleDeathSounds
+    elseif ply:Team() == TEAM_GUARD then
+        sounds = guardDeathSounds
+    end
+    ply:EmitSound(sounds[math.random(#sounds)], math.random(100, 140), math.random(90, 110))
+end
+
 hook.Add("DoPlayerDeath", "JB.DoPlayerDeath.DropWeapon", function(ply)
-    if IsValid(ply) and IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() ~= "jb_fists" then
+    if not IsValid(ply) then return end
+    playPlayerDeathSound(ply)
+    if IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() ~= "jb_fists" then
         local wep = ply:GetActiveWeapon()
         wep.IsDropped = true
         wep.BeingPickedUp = false
@@ -339,15 +373,9 @@ hook.Add("PlayerHurt", "JB.PlayerHurt.MakeRebel", function(victim, attacker)
     if attacker:Team() == TEAM_PRISONER and victim:Team() == TEAM_GUARD and attacker.SetRebel and not attacker:GetRebel() and JB.State ~= STATE_LASTREQUEST then attacker:AddRebelStatus() end
 end)
 
-local painSounds = {"vo/npc/male01/ow01.wav", "vo/npc/male01/ow02.wav", "vo/npc/male01/pain01.wav", "vo/npc/male01/pain02.wav", "vo/npc/male01/pain03.wav", "vo/npc/male01/pain04.wav", "vo/npc/male01/pain05.wav", "vo/npc/male01/pain06.wav", "vo/npc/male01/pain07.wav", "vo/npc/male01/pain08.wav", "vo/npc/male01/pain09.wav"}
-local femalePainSounds = {"vo/npc/female01/ow01.wav", "vo/npc/female01/ow02.wav", "vo/npc/female01/pain01.wav", "vo/npc/female01/pain02.wav", "vo/npc/female01/pain03.wav", "vo/npc/female01/pain04.wav", "vo/npc/female01/pain05.wav", "vo/npc/female01/pain06.wav", "vo/npc/female01/pain07.wav", "vo/npc/female01/pain08.wav", "vo/npc/female01/pain09.wav"}
-hook.Add("EntityTakeDamage", "JB.EntityTakeDamage.SayOuch", function(victim)
+hook.Add("EntityTakeDamage", "JB.EntityTakeDamage.SayOuch", function(victim, dmginfo)
     local dothemath = math.random(1, 6)
-    if IsValid(victim) and victim:IsPlayer() and victim:GetModel():find("/male") and dothemath == 1 then
-        victim:EmitSound(painSounds[math.random(#painSounds)], math.random(100, 140), math.random(90, 110))
-    elseif IsValid(victim) and victim:IsPlayer() and victim:GetModel():find("/female") and dothemath == 1 then
-        victim:EmitSound(femalePainSounds[math.random(#femalePainSounds)], math.random(100, 140), math.random(90, 110))
-    end
+    if IsValid(victim) and victim:IsPlayer() and not dmginfo:IsDamageType(DMG_FALL) and (victim:GetModel():find("/male") or victim:GetModel():find("/female")) and dothemath == 1 then playPlayerPainSound(victim) end
 end)
 
 concommand.Remove("changeteam")
