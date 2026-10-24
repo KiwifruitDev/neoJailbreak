@@ -132,11 +132,11 @@ function SWEP:GetViewModelPosition(pos, ang)
         local ta = math.atan(co, si)
         local ta2 = math.atan(co * si, co * si)
         speedReduced = speed / 250
-        targetPos.x = targetPos.x + ta * 0.1375 * speedReduced
-        targetPos.z = targetPos.z + ta2 * 0.0625 * speedReduced
-        targetAng.y = targetAng.y + ta * 0.125 * speedReduced
-        targetAng.x = targetAng.x + ta2 * 0.25 * speedReduced
-        targetAng.z = targetAng.z + ta2 * 0.375 * speedReduced
+        targetPos.x = targetPos.x + ta * 0.0275 * speedReduced
+        targetPos.z = targetPos.z + ta2 * 0.0125 * speedReduced
+        targetAng.y = targetAng.y + ta * 0.025 * speedReduced
+        targetAng.x = targetAng.x + ta2 * 0.05 * speedReduced
+        targetAng.z = targetAng.z + ta2 * 0.075 * speedReduced
     end
 
     ang:RotateAroundAxis(ang:Right(), targetAng.x)
