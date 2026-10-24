@@ -39,8 +39,8 @@ function JB.Gamemode:CalcView(ply, pos, ang, fov, nearZ, farZ)
     if ply:KeyDown(IN_SPEED) then
         count = count + FrameTime() * 8 * mulSpeed
         fovSmooth = Lerp(FrameTime() * 5, fovSmooth, fov + mulSpeed * 10)
-        angRightSmooth = -math.abs(math.sin(count) * 1)
-        angUpSmooth = math.sin(count) * 1.5
+        angRightSmooth = -math.abs(math.sin(count) * 0.2)
+        angUpSmooth = math.sin(count) * 0.3
     else
         fovSmooth = Lerp(FrameTime() * 20, fovSmooth, fov)
         angRightSmooth = Lerp(FrameTime() * 10, angRightSmooth, 0)
@@ -48,6 +48,10 @@ function JB.Gamemode:CalcView(ply, pos, ang, fov, nearZ, farZ)
         mulSpeed = 0
         count = 0
     end
+
+    net.Receive("JB.PlayClientSound", function()
+        surface.PlaySound(net.ReadString())
+    end)
 
     ang:RotateAroundAxis(ang:Right(), angRightSmooth * 2)
     ang:RotateAroundAxis(ang:Up(), angUpSmooth * 2)

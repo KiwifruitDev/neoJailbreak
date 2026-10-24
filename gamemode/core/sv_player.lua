@@ -23,7 +23,7 @@ JB.Gamemode.PlayerInitialSpawn = function(_, ply)
     ply:SetTeam(getJoinTeam())
     JB:DebugPrint(ply:Nick() .. " has successfully joined the server.")
     --ply:ConCommand("snd_restart") --if they join the server with the content addon, their sound may not work properly
-    ply:SendLua(string.format("surface.PlaySound(%q)", "#otterjailbreak/waitingforplayers.wav"))
+    ply:PlayClientSound("#otterjailbreak/waitingforplayers.wav")
 end
 
 JB.Gamemode.PlayerSelectSpawn = function(gm, ply, transition)
@@ -109,7 +109,7 @@ hook.Add("WeaponEquip", "JB.WeaponEquip.AutoSelect", function(weapon, ply)
     timer.Simple(0, function()
         if IsValid(weapon) and IsValid(ply) and weapon:GetOwner() == ply then
             ply:SelectWeapon(class)
-            ply:SendLua(string.format("surface.PlaySound(%q)", "common/wpn_select.wav"))
+            ply:PlayClientSound("common/wpn_select.wav")
         end
     end)
 end)
@@ -140,15 +140,15 @@ JB.Gamemode.PlayerDeath = function(_, victim, weapon, killer)
     if victim == killer and victim:GetNWInt("killstreak") >= 4 then
         if victim:Team() == 1 then --accounce death sfx for those who have killstreaks
             for _, ply in ipairs(player.GetAll()) do
-                ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_01_death.wav"))
+                ply:PlayClientSound("/misc/ks_tier_01_death.wav")
             end
         elseif victim.GetWarden and victim:GetWarden() then
             for _, ply in ipairs(player.GetAll()) do
-                ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_04_death.wav"))
+                ply:PlayClientSound("/misc/ks_tier_04_death.wav")
             end
         else
             for _, ply in ipairs(player.GetAll()) do
-                ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_03_death.wav"))
+                ply:PlayClientSound("/misc/ks_tier_03_death.wav")
             end
         end
     elseif victim:Team() == 1 then
@@ -161,10 +161,10 @@ JB.Gamemode.PlayerDeath = function(_, victim, weapon, killer)
     end
 
     if victim:Team() == TEAM_GUARD and JB:AliveGuards() > 1 then --bg music, shouldn't be activated if it's the end of the round otherwise it will overlay the round end music
-        victim:SendLua(string.format("surface.PlaySound(%q)", table.Random(randomGhostSFX)))
+        victim:PlayClientSound(table.Random(randomGhostSFX))
     elseif victim:Team() == TEAM_PRISONER and JB:AlivePrisoners() > 1 then
         --bg music, shouldn't be activated if it's the end of the round otherwise it will overlay the round end music
-        victim:SendLua(string.format("surface.PlaySound(%q)", table.Random(randomGhostSFX)))
+        victim:PlayClientSound(table.Random(randomGhostSFX))
     end
 
     if victim:GetNWInt("killstreak") >= 4 and killerIsPlayer and killer ~= victim and killer:Alive() then
@@ -180,47 +180,47 @@ JB.Gamemode.PlayerDeath = function(_, victim, weapon, killer)
     if killerIsPlayer and killer:GetNWInt("killstreak") == 2 and killer ~= victim and killer:Alive() then
         JB:BroadcastNotification(string.upper(killer:Nick()) .. " IS ON A KILLING SPREE! - " .. killer:GetNWInt("killstreak") .. " KILLS") --2
         for _, ply in ipairs(player.GetAll()) do
-            ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_01.wav"))
+            ply:PlayClientSound("/misc/ks_tier_01.wav")
         end
     elseif killerIsPlayer and killer:GetNWInt("killstreak") > 2 and killer:GetNWInt("killstreak") < 4 and killer ~= victim and killer:Alive() then
         JB:BroadcastNotification(string.upper(killer:Nick()) .. " IS STILL ON A KILLING SPREE! - " .. killer:GetNWInt("killstreak") .. " KILLS") --3
         for _, ply in ipairs(player.GetAll()) do
-            ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_01_kill.wav"))
+            ply:PlayClientSound("/misc/ks_tier_01_kill.wav")
         end
     elseif killerIsPlayer and killer:GetNWInt("killstreak") == 4 and killer ~= victim and killer:Alive() then
         JB:BroadcastNotification(string.upper(killer:Nick()) .. " IS UNSTOPPABLE! - " .. killer:GetNWInt("killstreak") .. " KILLS") --4
         for _, ply in ipairs(player.GetAll()) do
-            ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_02.wav"))
+            ply:PlayClientSound("/misc/ks_tier_02.wav")
         end
     elseif killerIsPlayer and killer:GetNWInt("killstreak") > 4 and killer:GetNWInt("killstreak") < 7 and killer ~= victim and killer:Alive() then
         local ks = killer:GetNWInt("killstreak")
         JB:BroadcastNotification(string.upper(killer:Nick()) .. " IS STILL UNSTOPPABLE! - " .. ks) --5 / 6
         for _, ply in ipairs(player.GetAll()) do
             if ks >= 6 then
-                ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_02_kill_02.wav"))
+                ply:PlayClientSound("/misc/ks_tier_02_kill_02.wav")
             else --5
-                ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_02_kill_01.wav"))
+                ply:PlayClientSound("/misc/ks_tier_02_kill_01.wav")
             end
         end
     elseif killerIsPlayer and killer:GetNWInt("killstreak") == 7 and killer ~= victim and killer:Alive() then
         JB:BroadcastNotification(string.upper(killer:Nick()) .. " IS ON A RAMPAGE! - " .. killer:GetNWInt("killstreak") .. " KILLS") --7
         for _, ply in ipairs(player.GetAll()) do
-            ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_03.wav"))
+            ply:PlayClientSound("/misc/ks_tier_03.wav")
         end
     elseif killerIsPlayer and killer:GetNWInt("killstreak") > 7 and killer:GetNWInt("killstreak") < 9 and killer ~= victim and killer:Alive() then
         JB:BroadcastNotification(string.upper(killer:Nick()) .. " IS STILL ON A RAMPAGE! - " .. killer:GetNWInt("killstreak") .. " KILLS") --8
         for _, ply in ipairs(player.GetAll()) do
-            ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_03_kill_01.wav"))
+            ply:PlayClientSound("/misc/ks_tier_03_kill_01.wav")
         end
     elseif killerIsPlayer and killer:GetNWInt("killstreak") == 9 and killer ~= victim and killer:Alive() then
         JB:BroadcastNotification(string.upper(killer:Nick()) .. " IS GOD-LIKE! - " .. killer:GetNWInt("killstreak") .. " KILLS") --9
         for _, ply in ipairs(player.GetAll()) do
-            ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_04.wav"))
+            ply:PlayClientSound("/misc/ks_tier_04.wav")
         end
     elseif killerIsPlayer and killer:GetNWInt("killstreak") > 9 and killer ~= victim and killer:Alive() then
         JB:BroadcastNotification(string.upper(killer:Nick()) .. " IS STILL GOD-LIKE! - " .. killer:GetNWInt("killstreak") .. " KILLS") --10+
         for _, ply in ipairs(player.GetAll()) do
-            ply:SendLua(string.format("surface.PlaySound(%q)", "/misc/ks_tier_04_kill_01.wav"))
+            ply:PlayClientSound("/misc/ks_tier_04_kill_01.wav")
         end
     end
 

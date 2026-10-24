@@ -12,6 +12,7 @@
 ]]--
 
 local pmeta = FindMetaTable("Player")
+util.AddNetworkString("JB.PlayClientSound")
 
 local function setPlayerTeamColor(ply, teamID)
     local color
@@ -26,6 +27,13 @@ local function setPlayerTeamColor(ply, teamID)
     ply:SetPlayerColor(color)
     ply:SetWeaponColor(color)
 end
+
+function pmeta:PlayClientSound(soundPath)
+    net.Start("JB.PlayClientSound")
+    net.WriteString(soundPath)
+    net.Send(self)
+end
+
 -- PLAYER CLASS SETTING
 local oldSetTeam = pmeta.SetTeam
 function pmeta:SetTeam(tm)

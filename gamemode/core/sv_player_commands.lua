@@ -125,7 +125,7 @@ local function teamSwitch(p, cmd)
     if not IsValid(p) then return end
     if cmd == "jb_team_select_guard" and JB:GetGuardsAllowed() > #team.GetPlayers(TEAM_GUARD) and p:Team() ~= TEAM_GUARD then
         if p:Alive() and JB.State ~= STATE_MAPVOTE and JB.State ~= STATE_IDLE and JB:AlivePrisoners() > 1 then
-            p:SendLua(string.format("surface.PlaySound(%q)", table.Random(randomGhostSFX)))
+            p:PlayClientSound(table.Random(randomGhostSFX))
         end
 
         p:SetTeam(TEAM_GUARD)
@@ -135,7 +135,7 @@ local function teamSwitch(p, cmd)
         p:SetFrags(0)
         p:SetDeaths(0)
     elseif cmd == "jb_team_select_prisoner" and p:Team() ~= TEAM_PRISONER then
-        if p:Alive() and JB.State ~= STATE_MAPVOTE and JB.State ~= STATE_IDLE and JB:AliveGuards() > 1 then p:SendLua(string.format("surface.PlaySound(%q)", table.Random(randomGhostSFX))) end
+        if p:Alive() and JB.State ~= STATE_MAPVOTE and JB.State ~= STATE_IDLE and JB:AliveGuards() > 1 then p:PlayClientSound(table.Random(randomGhostSFX)) end
         p:SetTeam(TEAM_PRISONER)
         p:KillSilent()
         p:SendNotification("Switched to prisoners")
@@ -181,7 +181,7 @@ concommand.Add("jb_admin_swap", function(p, _, a)
     if not steamid then return end
     for _, v in ipairs(player.GetAll()) do
         if v:SteamID() == steamid then
-            if p:Alive() then p:SendLua(string.format("surface.PlaySound(%q)", table.Random(randomGhostSFX))) end
+            if p:Alive() then p:PlayClientSound(table.Random(randomGhostSFX)) end
             if v:Team() == TEAM_GUARD then
                 v:SetTeam(TEAM_PRISONER)
                 v:KillSilent()

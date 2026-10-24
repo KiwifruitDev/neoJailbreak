@@ -18,7 +18,7 @@ JB:RegisterScriptday("GangWarDay", {
     Start = function()
         JB:BroadcastNotification("The warden has initiated Gang War Day!")
         for _, ply in ipairs(player.GetAll()) do
-            ply:SendLua(string.format("surface.PlaySound(%q)", "#otterjailbreak/gangwarday.wav"))
+            ply:PlayClientSound("#otterjailbreak/gangwarday.wav")
             ply:StripWeapons()
             ply:Give("weapon_jb_fists")
             ply:Give("weapon_jb_knife")

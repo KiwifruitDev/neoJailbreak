@@ -19,7 +19,7 @@ function JB:ClaimWarden(p, automatic)
     end
 
     for _, ply in ipairs(player.GetAll()) do
-        ply:SendLua(string.format("surface.PlaySound(%q)", "otterjailbreak/lc_spawncount.mp3"))
+        ply:PlayClientSound("otterjailbreak/lc_spawncount.mp3")
     end
 
     p:AddWardenStatus()
@@ -199,15 +199,15 @@ concommand.Add("jb_warden_placepointer", function(p, _, a)
         JB:BroadcastQuickNotification("The warden has placed a marker")
         for _, ply in ipairs(player.GetAll()) do
             if typ == "generic" then
-                ply:SendLua(string.format("surface.PlaySound(%q)", "coach/coach_go_here.wav"))
+                ply:PlayClientSound("coach/coach_go_here.wav")
             elseif typ == "exclamation" then
-                ply:SendLua(string.format("surface.PlaySound(%q)", "coach/coach_attack_here.wav"))
+                ply:PlayClientSound("coach/coach_attack_here.wav")
             elseif typ == "question" then
-                ply:SendLua(string.format("surface.PlaySound(%q)", "coach/coach_look_here.wav"))
+                ply:PlayClientSound("coach/coach_look_here.wav")
             elseif typ == "line" then
-                ply:SendLua(string.format("surface.PlaySound(%q)", "coach/coach_go_here.wav"))
+                ply:PlayClientSound("coach/coach_go_here.wav")
             elseif typ == "cross" then
-                ply:SendLua(string.format("surface.PlaySound(%q)", "coach/coach_defend_here.wav"))
+                ply:PlayClientSound("coach/coach_defend_here.wav")
             end
         end
     end
