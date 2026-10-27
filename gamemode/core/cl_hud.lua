@@ -370,11 +370,11 @@ end
 
 -- POINTER
 local posMarkerScreen, marker
-local drawWardenPointer = function()
-    posMarkerScreen = JB.TRANSMITTER:GetJBWarden_PointerPos():ToScreen()
+local drawWardenPointer = function(transmitter)
+    posMarkerScreen = transmitter:GetJBWarden_PointerPos():ToScreen()
     x = clamp(posMarkerScreen.x, 32, scrW - 64)
     y = clamp(posMarkerScreen.y, 32, scrH - 64) - 8
-    marker = wardenMarkers[JB.TRANSMITTER:GetJBWarden_PointerType()]
+    marker = wardenMarkers[transmitter:GetJBWarden_PointerType()]
     color_marker.a = (posMarkerScreen.x ~= x or posMarkerScreen.y ~= y + 8) and 100 or 255
     color_marker_dark.a = color_marker.a
     setMaterial(marker.icon)
@@ -382,7 +382,7 @@ local drawWardenPointer = function()
     drawTexturedRect(x - 16, y - 16, 32, 32)
     drawSimpleShadowText(marker.text, "JBNormal", x, y + 16, color_marker, 1, 0)
     -- note: 64unit = 1.22meters
-    drawSimpleShadowText(tostring(math.floor(LocalPlayer():EyePos():Distance(JB.TRANSMITTER:GetJBWarden_PointerPos()) * 1.22 / 64)) .. "m", "JBSmall", x, y + 34, color_marker, 1, 0)
+    drawSimpleShadowText(tostring(math.floor(LocalPlayer():EyePos():Distance(transmitter:GetJBWarden_PointerPos()) * 1.22 / 64)) .. "m", "JBSmall", x, y + 34, color_marker, 1, 0)
 end
 
 -- GM HOOK
@@ -420,7 +420,8 @@ JB.Gamemode.HUDPaint = function()
         drawText("A new round can not start until there is at least one player on both teams.\nWait for somebody to join the empty team.", "JBNormal", scrW / 2, scrH * .6, JB.Color.white, 1, 1)
     end
 
-    if IsValid(JB.TRANSMITTER) and JB.TRANSMITTER:GetJBWarden_PointerPos() and JB.TRANSMITTER:GetJBWarden_PointerType() and wardenMarkers[JB.TRANSMITTER:GetJBWarden_PointerType()] then drawWardenPointer() end
+    local transmitter = JB:GetTransmitter()
+    if IsValid(transmitter) and transmitter.GetJBWarden_PointerPos and transmitter.GetJBWarden_PointerType and wardenMarkers[transmitter:GetJBWarden_PointerType()] then drawWardenPointer(transmitter) end
     JB.Gamemode:HUDDrawTargetID() -- not calling hook, we don't want any addons messing with this.
     hookCall("HUDPaintOver", JB.Gamemode)
 end

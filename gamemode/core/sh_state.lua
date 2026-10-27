@@ -333,6 +333,16 @@ end
 -- Transmission Entity
 
 JB.TRANSMITTER = JB.TRANSMITTER or NULL
+
+-- Returns the state transmitter, but only once it is valid and initialized.
+-- A transmitter that has just been created does not have its network var accessors
+-- (GetJBWarden, GetJBState, ...) yet, so IsValid alone is not enough to use it.
+function JB:GetTransmitter()
+    local transmitter = JB.TRANSMITTER
+    if not IsValid(transmitter) or not transmitter.GetJBState then return NULL end
+    return transmitter
+end
+
 hook.Add("InitPostEntity", "JB.InitPostEntity.SpawnStateTransmit", function()
     if SERVER and not IsValid(JB.TRANSMITTER) then
         JB.TRANSMITTER = ents.Create("jb_transmitter_state")
@@ -358,10 +368,14 @@ end)
 
 if CLIENT then
     hook.Add("OnEntityCreated", "JB.OnEntityCreated.SelectTransmitter", function(ent)
-        if ent:GetClass() == "jb_transmitter_state" and not IsValid(JB.TRANSMITTER) then
+        if ent:GetClass() ~= "jb_transmitter_state" then return end
+        -- OnEntityCreated fires before the entity is initialized, so wait a tick
+        -- before registering it and touching its network variables.
+        timer.Simple(0, function()
+            if not IsValid(ent) or IsValid(JB.TRANSMITTER) then return end
             JB.TRANSMITTER = ent
             JB:DebugPrint("Transmitter found (OnEntityCreated)")
-        end
+        end)
     end)
 
     timer.Create("JB.CheckOnStateTransmitter", 10, 0, function()
