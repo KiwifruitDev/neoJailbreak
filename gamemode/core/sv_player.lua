@@ -11,7 +11,6 @@
     See LICENSE for copyright attribution and licensing information.
 ]]--
 
-local randomGhostSFX = {"#otterjailbreak/lc_ghost01.mp3", "#otterjailbreak/lc_ghost02.mp3", "#otterjailbreak/lc_ghost03.mp3", "#otterjailbreak/lc_ghost04.mp3"}
 local function getJoinTeam()
     local guardCount = #team.GetPlayers(TEAM_GUARD)
     local prisonerCount = #team.GetPlayers(TEAM_PRISONER)
@@ -158,13 +157,6 @@ JB.Gamemode.PlayerDeath = function(_, victim, weapon, killer)
         victim:EmitSound("/misc/ks_tier_04_death.wav")
     else
         victim:EmitSound("/misc/ks_tier_03_death.wav")
-    end
-
-    if victim:Team() == TEAM_GUARD and JB:AliveGuards() > 1 then --bg music, shouldn't be activated if it's the end of the round otherwise it will overlay the round end music
-        victim:PlayClientSound(table.Random(randomGhostSFX))
-    elseif victim:Team() == TEAM_PRISONER and JB:AlivePrisoners() > 1 then
-        --bg music, shouldn't be activated if it's the end of the round otherwise it will overlay the round end music
-        victim:PlayClientSound(table.Random(randomGhostSFX))
     end
 
     if victim:GetNWInt("killstreak") >= 4 and killerIsPlayer and killer ~= victim and killer:Alive() then

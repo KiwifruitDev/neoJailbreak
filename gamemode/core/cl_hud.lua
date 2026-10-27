@@ -99,12 +99,7 @@ util.PrecacheSound("misc/ks_tier_04_death.wav")
 util.PrecacheSound("misc/ks_tier_04_kill_01.wav")
 util.PrecacheSound("otterjailbreak/gangwarday.wav")
 --util.PrecacheSound("otterjailbreak/waitingforplayers.wav")
-util.PrecacheSound("otterjailbreak/lc_30secleft.mp3")
 util.PrecacheSound("otterjailbreak/lc_dragonwin.mp3")
-util.PrecacheSound("otterjailbreak/lc_ghost01.mp3")
-util.PrecacheSound("otterjailbreak/lc_ghost02.mp3")
-util.PrecacheSound("otterjailbreak/lc_ghost03.mp3")
-util.PrecacheSound("otterjailbreak/lc_ghost04.mp3")
 util.PrecacheSound("otterjailbreak/lc_knightwin.mp3")
 util.PrecacheSound("otterjailbreak/lc_spawnbaron.mp3")
 util.PrecacheSound("otterjailbreak/lc_spawncount.mp3")
@@ -345,7 +340,6 @@ local drawTimer = function()
     if roundActive and convertTime(timeRemaining) == "0 : 30" and thirtysecleft == false then
         thirtysecleft = true
         notification.AddLegacy("30 seconds remaining!", NOTICE_GENERIC)
-        surface.PlaySound("otterjailbreak/lc_30secleft.mp3")
     end
 
     setMaterial(matTime)
